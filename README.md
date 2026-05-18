@@ -6,16 +6,37 @@
 
 # homebridge-myhome-own
 
-[![npm](https://img.shields.io/npm/v/homebridge-myhome-own.svg)](https://www.npmjs.com/package/homebridge-enlighten-power) [![npm](https://img.shields.io/npm/dt/hhomebridge-myhome-own.svg)](https://www.npmjs.com/package/homebridge-myhome-own)
+[![npm](https://img.shields.io/npm/v/homebridge-myhome-own.svg)](https://www.npmjs.com/package/homebridge-myhome-own)
 
 </span>
+
+## Homebridge 2.0 Compatibility Fix
+
+This fork adds compatibility with **Homebridge 2.0** and **Node.js >= 18**.
+
+The original plugin by [LeJeko](https://github.com/LeJeko/homebridge-myhome) stopped working with Homebridge 2.0 due to breaking API changes. The following fixes have been applied:
+
+| Issue | Fix |
+|---|---|
+| `new Buffer()` deprecated | → `Buffer.from()` |
+| `Service.BatteryService` removed | → `Service.Battery` |
+| `.getValue(null)` removed (84 occurrences) | → `.emit('get', () => {})` |
+| `package.json engines` outdated | → Node `>=18`, HB `>=1.6.0` |
+
+> **Note:** The configuration format is identical to the original plugin — no changes needed if you are migrating from the original `homebridge-myhome-own`.
+
+### Compatibility with MyHOMEServer1 (MHS1)
+
+This plugin supports **HMAC authentication** with alphanumeric passwords, which is required by the MyHOMEServer1 gateway. The `ownpassword` field accepts alphanumeric passwords as set in the Home+Project app.
+
+---
 
 ## Why own?
 
 Short answer: OpenWebNet.
 This is a fork of a great but unpublished package of [simon77](https://github.com/simont77/homebridge-myhome), forked from [angeloxx](https://github.com/angeloxx/homebridge-myhome) which was created 4 years ago.
 Furthermore, on npm the __homebridge-myhome__ package is already occupied by [another inactive user](https://www.npmjs.com/package/homebridge-myhome) for 4 years as well. In addition, links to Github are directed to a "Lockitron" stuff...
-So I decided to add a revealing acronym to distinguish them on npm with the ability to stay in a bramch of the original homebridge-myhome github fork.
+So I decided to add a revealing acronym to distinguish them on npm with the ability to stay in a branch of the original homebridge-myhome github fork.
 
 ## Description
 Legrand (BTicino) MyHome plugin with Elgato Eve history feature for contact, motion sensor and powermeter.
@@ -28,22 +49,32 @@ Legrand [MyHome](http://www.homesystems-legrandgroup.com/BtHomeSystems/home.acti
 - contact and motion sensors
 
 With this plugin, the support of a IP gateway installed in your plant and a configuration of all installed 
-systems (MyHome does not support the autodiscovery of the system) you can control it. You need to disable the OpenWebNet password-based authentication from the IP of the device that runs homebridge (ie. Raspberry) or set the auhentication to HMAC; 
-HMAC authentication is supported by all recent IP gateways or older one with updated firmware (eg. F454 with v2 firmware).
+systems (MyHome does not support the autodiscovery of the system) you can control it. You need to disable the OpenWebNet password-based authentication from the IP of the device that runs homebridge (ie. Raspberry) or set the authentication to HMAC; 
+HMAC authentication is supported by all recent IP gateways or older one with updated firmware (eg. F454 with v2 firmware) and is required by MyHOMEServer1.
 
 # Installation
-Use Homebridge web UI or install plugin with
+
+Install the plugin from your fork:
 ```shell
-npm install -g homebridge-myhome-own`
+npm install -g miobio/homebridge-myhome
 ```
-Add platform within config.json of you homebridge instance:
+
+Or install manually:
+```shell
+cd /var/lib/homebridge
+npm uninstall homebridge-myhome-own
+npm install /path/to/homebridge-myhome-own-hb2
+```
+
+Add platform within config.json of your homebridge instance:
 
 ```json
 {
     "platforms": [{
-        "platform": "MyHome Gateway",
-        "ipaddress": "192.168.1.1",
-        "password": "12345",
+        "platform": "LegrandMyHome",
+        "ipaddress": "192.168.1.35",
+        "port": 20000,
+        "ownpassword": "yourpassword",
         "setclock": true,
         "devices": [
                 /*Static list of devices*/
@@ -58,45 +89,8 @@ Add platform within config.json of you homebridge instance:
     "description": "My Fantastic Legrand MyHome System", 
     "accessories": []
 }
-````
-Restart homebridge.
-
-Sample log is:
-```log
-[1/14/2017, 12:11:29 AM] Plugin /usr/lib/nodejs does not have a package name that begins with 'homebridge-'.
-[1/14/2017, 12:11:29 AM] Loaded plugin: homebridge-myhome-tng
-[1/14/2017, 12:11:29 AM] Registering platform 'homebridge-myhome.LegrandMyHome'
-[1/14/2017, 12:11:29 AM] ---
-[1/14/2017, 12:11:29 AM] Loaded config.json with 0 accessories and 1 platforms.
-[1/14/2017, 12:11:29 AM] ---
-[1/14/2017, 12:11:29 AM] Loading 1 platforms...
-[1/14/2017, 12:11:29 AM] Initializing LegrandMyHome platform...
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome::MHRelay create object: 0/1/5
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome::MHRelay create object: 0/1/1
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome::MHRelay create object: 0/1/4
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome::MHRelay create object: 0/1/2
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome::MHThermostat create object: 21
-[1/14/2017, 12:11:29 AM] LegrandMyHome: adds accessory
-[1/14/2017, 12:11:29 AM] LegrandMyHome for MyHome Gateway at 192.168.157.213:20000
-[1/14/2017, 12:11:29 AM] Initializing platform accessory 'Bathroom Light'...
-[1/14/2017, 12:11:29 AM] Initializing platform accessory 'Night hallway Light'...
-[1/14/2017, 12:11:29 AM] Initializing platform accessory 'Office'...
-[1/14/2017, 12:11:29 AM] Initializing platform accessory 'Master bedroom Central'...
-[1/14/2017, 12:11:29 AM] Initializing platform accessory 'Living Room Thermostat'...
-[1/14/2017, 12:11:29 AM] Loading 0 accessories...
-Scan this code with your HomeKit App on your iOS device to pair with Homebridge:
-
-    ┌────────────┐
-    │ 342-52-220 │
-    └────────────┘
-
-[1/14/2017, 12:11:29 AM] Homebridge is running on port 51827.
 ```
+Restart homebridge.
 
 ## Configuration
 
@@ -113,9 +107,9 @@ The first part of the config file contains details about the MyHome Gateway used
 ```
 
 You need to change:
-- ipaddress: put the IP address or name of the MyHome Gateway (eg. F454 or MH201)
+- ipaddress: put the IP address or name of the MyHome Gateway (eg. F454, MH201 or MyHOMEServer1)
 - port: should be 20000 and keep this value
-- ownpassword: the OpenWebNet password, default is 12345 but everyone will suggest to you to change it with another password, but you will keep the default one, I know...
+- ownpassword: the OpenWebNet password. Alphanumeric passwords (required by MyHOMEServer1) are supported.
 - setclock: set to true if you want your homebridge server to set the time of your gateway every hour
 - devices: list of installed devices
 
@@ -123,7 +117,7 @@ The devices section contains the list of devices that will be managed. All devic
 
 - accessory: the technical name of the device, should be one of the names listed in this document
 - name: mnemonic name, will be displayed by iOS HomeKit application
-- address: the MyHome address, usually in **B/A/PL** format for lights and curtaints or single/double digits for other devices. **B** stands for BUS (usually 0), **A** and **PL** is the name of the addressing object used by BTicino and stands for Ambient and Light Point (Punto Luce in the original italian version)
+- address: the MyHome address, usually in **B/A/PL** format for lights and curtains or single/double digits for other devices. **B** stands for BUS (usually 0), **A** and **PL** is the name of the addressing object used by BTicino and stands for Ambient and Light Point (Punto Luce in the original italian version)
 
 ## Supported devices
 
@@ -144,7 +138,7 @@ The devices section contains the list of devices that will be managed. All devic
 * MHThermostat: Standard Thermostat controlled by a 99-Zones Central Station (code 3550), address is the Zone Identifier (1-99)
 * MHExternalThermometer: External Probe controlled by a 99-Zones Central Station (code 3550), address is the Zone Identifier (1-9)
 * MHOutlet: Standard (not-Lighting) Relay, address is B/A/PL (eg. 0/1/10). See MHRelay for custom frame support
-* MHBlind: Standard Automation Relay (eg. F411, I need to check the F401), address is B/A/PL (eg. 0/1/10)
+* MHBlind: Standard Automation Relay (eg. F411), address is B/A/PL (eg. 0/1/10)
   * this device defines another property called "time" that defines the configured "stop time" in seconds; using this property the driver can evaluate the current position of the blind
 * MHBlindAdvanced: Advanced version of standard Blind (eg. F401 that manages internally the current position), address is B/A/PL (eg. 0/1/10)
 * MHContactSensor: Dry Contact sensor (eg. 3477 or some burgalarm sensors), address range is 1-201. Supported types are "motion" and "contact". Elgato Eve history feature is supported.
@@ -152,13 +146,13 @@ The devices section contains the list of devices that will be managed. All devic
 * MHAlarm: tested on central 3486. Zones for Away, Night and At Home activation are currently hard coded in plugin code. Alarm activation/deactivation from Homekit is not implemented for security reasons, so only monitor of the current status is supported
 * MHTimedRelay: to issue temporized command to relays. Default duration set in "duration"
 * MHControlledLoad: to control status of old generation Load Control outlets
-* MHAux: to deliver AUX events to Homekit. Supported type are "leak", "gas" and contact".
+* MHAux: to deliver AUX events to Homekit. Supported type are "leak", "gas" and "contact".
 * MHIrrigation: modified MHTimedRelay using the new Homekit irrigation service
 
 See sample-config.json for the additional parameters of each accessory.
 
 ## Tested devices
-- F453, F454v1, MH200N and MH201 as IP Gateway
+- F453, F454v1, MH200N, MH201 and MyHOMEServer1 (firmware 2.x) as IP Gateway
 - F411/2 as MHRelay, MHOutlet and MHCurtain
 - F401 as MHBlindAdvanced
 - F416U1 as MHDimmer
@@ -170,8 +164,9 @@ See sample-config.json for the additional parameters of each accessory.
 - Groups are not managed
 
 ## Credits
-https://github.com/angeloxx/homebridge-myhome : First version
-https://github.com/simont77/homebridge-myhome : Added accessories and Elgato Eve history
+https://github.com/angeloxx/homebridge-myhome : First version  
+https://github.com/simont77/homebridge-myhome : Added accessories and Elgato Eve history  
+https://github.com/LeJeko/homebridge-myhome : homebridge-myhome-own package  
 
 # Disclaimer
 
