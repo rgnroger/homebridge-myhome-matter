@@ -1,7 +1,7 @@
 {
-  "name": "homebridge-myhome-own",
-  "version": "0.2.1-hb2",
-  "description": "Legrand MyHome OpenWebNet plugin",
+  "name": "homebridge-myhome-hb2",
+  "version": "1.0.0",
+  "description": "Legrand BTicino MyHome OpenWebNet plugin - Homebridge 2.0 compatible fork of homebridge-myhome-own",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
@@ -9,23 +9,25 @@
     "Bticino",
     "MyHome",
     "OpenWebNet",
-    "ovn"
+    "MHS1",
+    "MyHOMEServer1",
+    "homebridge2"
   ],
   "engines": {
     "node": ">=18.0.0",
     "homebridge": ">=1.6.0"
   },
   "author": {
-    "name": "LeJeko"
+    "name": "miobio"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/LeJeko/homebridge-myhome"
+    "url": "https://github.com/miobio/homebridge-myhome-hb2"
   },
   "bugs": {
-    "url": "https://github.com/LeJeko/homebridge-myhome/issues"
+    "url": "https://github.com/miobio/homebridge-myhome-hb2/issues"
   },
-  "homepage": "https://github.com/LeJeko/homebridge-myhome#readme",
+  "homepage": "https://github.com/miobio/homebridge-myhome-hb2#readme",
   "dependencies": {
     "debug": "^2.4.5",
     "net": "^1.0.0",
