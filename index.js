@@ -9,12 +9,12 @@ var correctingInterval = require('correcting-interval');
 const version = require('./package.json').version;
 const Format = require('util').format;
 var hexToBase64 = function (val) {
-	return new Buffer(('' + val).replace(/[^0-9A-F]/ig, ''), 'hex').toString('base64');
+	return Buffer.from(('' + val).replace(/[^0-9A-F]/ig, ''), 'hex').toString('base64');
 };
 var base64ToHex = function (val) {
 	if (!val)
 		return val;
-	return new Buffer(val, 'base64').toString('hex');
+	return Buffer.from(val, 'base64').toString('hex');
 };
 var numToHex = function (val, len) {
 	var s = Number(val >>> 0).toString(16);
@@ -297,20 +297,20 @@ class LegrandMyHome {
 				if (accessory.address == _address && accessory.lightBulbService !== undefined) {
 					accessory.power = _onoff;
 					accessory.bri = _onoff * 100;
-					accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
+					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.rainService !== undefined) {
 					accessory.power = _onoff;
-					accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue(null);
+					accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.OutletService !== undefined) {
 					accessory.power = _onoff;
-					accessory.OutletService.getCharacteristic(Characteristic.On).getValue(null);
+					accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.IrrigationService !== undefined) {
 					accessory.power = _onoff;
-					accessory.IrrigationService.getCharacteristic(Characteristic.Active).getValue(null);
-					accessory.IrrigationService.getCharacteristic(Characteristic.InUse).getValue(null);
+					accessory.IrrigationService.getCharacteristic(Characteristic.Active).emit("get", () => {});
+					accessory.IrrigationService.getCharacteristic(Characteristic.InUse).emit("get", () => {});
 				}
 			}.bind(this));
 		else
@@ -319,15 +319,15 @@ class LegrandMyHome {
 					if (accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
+						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
-						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue(null);
+						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
-						accessory.OutletService.getCharacteristic(Characteristic.On).getValue(null);
+						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 				}.bind(this));
 			else
@@ -335,15 +335,15 @@ class LegrandMyHome {
 					if (accessory.ambient == a && accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
+						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
-						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue(null);
+						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
-						accessory.OutletService.getCharacteristic(Characteristic.On).getValue(null);
+						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 				}.bind(this));
 	}
@@ -352,7 +352,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.address == _address && accessory.contactSensorService !== undefined) {
 				accessory.state = _state;
-				accessory.contactSensorService.getCharacteristic(Characteristic.ContactSensorState).getValue(null);
+				accessory.contactSensorService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
 			}
 		}.bind(this));
 	}
@@ -361,7 +361,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.scenarioService !== undefined && accessory.address == _address) {
 				accessory.state = _state;
-				accessory.scenarioService.getCharacteristic(Characteristic.Active).getValue(null);
+				accessory.scenarioService.getCharacteristic(Characteristic.Active).emit("get", () => {});
 			}
 		}.bind(this));
 	}
@@ -370,7 +370,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.scenarioService !== undefined && accessory.address == _address) {
 				accessory.running = _state;
-				accessory.scenarioService.getCharacteristic(LegrandMyHome.SimpleBoolean).getValue(null);
+				accessory.scenarioService.getCharacteristic(LegrandMyHome.SimpleBoolean).emit("get", () => {});
 			}
 		}.bind(this));
 	}
@@ -401,30 +401,30 @@ class LegrandMyHome {
 				switch (accessory.type) {
 					case 'Contact':
 						accessory.state = _state;
-						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).getValue(null);
+						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
 						break;
 					case 'Leak':
-						accessory.state = _state; accessory.dryContactService.getCharacteristic(Characteristic.LeakDetected).getValue(null);
+						accessory.state = _state; accessory.dryContactService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
 						break;
 					case 'Motion':
 						if (_state == true) {
 							accessory.state = true;
-							accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).getValue(null);
+							accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
 							clearTimeout(accessory.durationhandle);
 							accessory.durationhandle = setTimeout(function () {
 								accessory.state = false;
-								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).getValue(null);
+								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
 							}.bind(this), accessory.duration * 1000);
 						}
 						else
 							if (accessory.firstGet == true) {
 								accessory.state = _state;
-								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).getValue(null);
+								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
 							}
 						break;
 					default:
 						accessory.state = _state;
-						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).getValue(null);
+						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
 						break;
 				}
 			}
@@ -436,15 +436,15 @@ class LegrandMyHome {
 			if (accessory.address == _address && accessory.AUXService !== undefined) {
 				accessory.state = _state;
 				switch (accessory.type) {
-					case 'Contact': accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).getValue(null);
+					case 'Contact': accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
 						break;
-					case 'Leak': accessory.AUXService.getCharacteristic(Characteristic.LeakDetected).getValue(null);
+					case 'Leak': accessory.AUXService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
 						break;
-					case 'Motion': accessory.AUXService.getCharacteristic(Characteristic.MotionDetected).getValue(null);
+					case 'Motion': accessory.AUXService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
 						break;
-					case 'Gas': accessory.AUXService.getCharacteristic(Characteristic.CarbonMonoxideDetected).getValue(null);
+					case 'Gas': accessory.AUXService.getCharacteristic(Characteristic.CarbonMonoxideDetected).emit("get", () => {});
 						break;
-					default: accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).getValue(null);
+					default: accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
 						break;
 				}
 			}
@@ -461,8 +461,8 @@ class LegrandMyHome {
 				if (accessory.address == _address && accessory.lightBulbService !== undefined) {
 					accessory.power = (_level > 0) ? 1 : 0;
 					accessory.bri = _level;
-					accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
-					accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).getValue(null);
+					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+					accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
 				}
 			}.bind(this));
 		else
@@ -471,8 +471,8 @@ class LegrandMyHome {
 					if (accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = (_level > 0) ? 1 : 0;
 						accessory.bri = _level;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
-						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).getValue(null);
+						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
 					}
 				}.bind(this));
 			else
@@ -480,8 +480,8 @@ class LegrandMyHome {
 					if (accessory.ambient == a && accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = (_level > 0) ? 1 : 0;
 						accessory.bri = _level;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).getValue(null);
-						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).getValue(null);
+						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
 					}
 				}.bind(this));
 	}
@@ -508,16 +508,16 @@ class LegrandMyHome {
 					accessory.triggered = true;
 				if ((accessory.active == true && _state != 1)) {
 					accessory.state = _state;
-					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).getValue(null);
+					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).emit("get", () => {});
 				}
 				if ((accessory.active == false && _state != 4)) {
 					accessory.state = _state;
-					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).getValue(null);
+					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).emit("get", () => {});
 				}
 
 				if (_state != 4) {
 					accessory.target = _state;
-					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).getValue(null);
+					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).emit("get", () => {});
 				}
 			}
 		}.bind(this));
@@ -527,7 +527,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.alarmService !== undefined) {
 				accessory.fault = _state;
-				accessory.alarmService.getCharacteristic(Characteristic.StatusFault).getValue(null);
+				accessory.alarmService.getCharacteristic(Characteristic.StatusFault).emit("get", () => {});
 			}
 		}.bind(this));
 
@@ -537,7 +537,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.alarmService !== undefined) {
 				accessory.tampered = _state;
-				accessory.alarmService.getCharacteristic(Characteristic.StatusTampered).getValue(null);
+				accessory.alarmService.getCharacteristic(Characteristic.StatusTampered).emit("get", () => {});
 			}
 		}.bind(this));
 
@@ -559,8 +559,8 @@ class LegrandMyHome {
 					accessory.triggered == false) {
 					accessory.state = Characteristic.SecuritySystemCurrentState.AWAY_ARM;
 					accessory.target = Characteristic.SecuritySystemTargetState.AWAY_ARM;
-					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).getValue(null);
-					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).getValue(null);
+					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).emit("get", () => {});
+					accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).emit("get", () => {});
 				}
 
 				else
@@ -576,15 +576,15 @@ class LegrandMyHome {
 						accessory.triggered == false) {
 						accessory.state = Characteristic.SecuritySystemCurrentState.NIGHT_ARM;
 						accessory.target = Characteristic.SecuritySystemTargetState.NIGHT_ARM;
-						accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).getValue(null);
-						accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).getValue(null);
+						accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).emit("get", () => {});
+						accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).emit("get", () => {});
 					}
 					else
 						if (accessory.active == true && accessory.triggered == false) {
 							accessory.state = Characteristic.SecuritySystemCurrentState.STAY_ARM;
 							accessory.target = Characteristic.SecuritySystemTargetState.STAY_ARM;
-							accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).getValue(null);
-							accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).getValue(null);
+							accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemCurrentState).emit("get", () => {});
+							accessory.alarmService.getCharacteristic(Characteristic.SecuritySystemTargetState).emit("get", () => {});
 						}
 			}
 		}.bind(this));
@@ -598,8 +598,8 @@ class LegrandMyHome {
 					accessory.batterylevel = 100;
 				else
 					accessory.batterylevel = 0;
-				accessory.alarmBatteryService.getCharacteristic(Characteristic.StatusLowBattery).getValue(null);
-				accessory.alarmBatteryService.getCharacteristic(Characteristic.BatteryLevel).getValue(null);
+				accessory.alarmBatteryService.getCharacteristic(Characteristic.StatusLowBattery).emit("get", () => {});
+				accessory.alarmBatteryService.getCharacteristic(Characteristic.BatteryLevel).emit("get", () => {});
 			}
 		}.bind(this));
 
@@ -609,7 +609,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.alarmBatteryService !== undefined) {
 				accessory.batterycharging = _state;
-			accessory.alarmBatteryService.getCharacteristic(Characteristic.ChargingState).getValue(null);
+			accessory.alarmBatteryService.getCharacteristic(Characteristic.ChargingState).emit("get", () => {});
 			}
 		}.bind(this));
 
@@ -623,19 +623,19 @@ class LegrandMyHome {
 					switch (_value) {
 						case 0:
 							accessory.enabled = false;
-							accessory.controlledLoad.getCharacteristic(Characteristic.OutletInUse).getValue(null);
+							accessory.controlledLoad.getCharacteristic(Characteristic.OutletInUse).emit("get", () => {});
 							break;
 						case 1:
 							accessory.enabled = true;
-							accessory.controlledLoad.getCharacteristic(Characteristic.OutletInUse).getValue(null);
+							accessory.controlledLoad.getCharacteristic(Characteristic.OutletInUse).emit("get", () => {});
 							break;
 						case 2:
 							accessory.forced = 1;
-							accessory.controlledLoad.getCharacteristic(Characteristic.Active).getValue(null);
+							accessory.controlledLoad.getCharacteristic(Characteristic.Active).emit("get", () => {});
 							break;
 						case 3:
 							accessory.forced = 0;
-							accessory.controlledLoad.getCharacteristic(Characteristic.Active).getValue(null);
+							accessory.controlledLoad.getCharacteristic(Characteristic.Active).emit("get", () => {});
 							break;
 					}
 				}
@@ -664,7 +664,7 @@ class LegrandMyHome {
 								accessory.state = Characteristic.PositionState.DECREASING;
 							accessory.updateTimer = setInterval(function () {
 								accessory.evaluatePosition();
-								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 							}.bind(accessory), 500);		
 							break;
 						case 2:
@@ -674,13 +674,13 @@ class LegrandMyHome {
 								accessory.state = Characteristic.PositionState.INCREASING;
 							accessory.updateTimer = setInterval(function () {
 								accessory.evaluatePosition();
-								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 							}.bind(accessory), 500);		
 							break;
 					}
-					accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).getValue(null);
-					accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
-					accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+					accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
+					accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
+					accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 				}
 			}.bind(this));
 		else
@@ -700,7 +700,7 @@ class LegrandMyHome {
 									accessory.state = Characteristic.PositionState.DECREASING;
 								accessory.updateTimer = setInterval(function () {
 									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 								}.bind(accessory), 500);		
 								break;
 							case 2:
@@ -710,13 +710,13 @@ class LegrandMyHome {
 									accessory.state = Characteristic.PositionState.INCREASING;
 								accessory.updateTimer = setInterval(function () {
 									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 								}.bind(accessory), 500);		
 								break;
 						}
-						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).getValue(null);
-						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
-						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
+						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
+						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 					}
 				}.bind(this));
 			else
@@ -735,7 +735,7 @@ class LegrandMyHome {
 									accessory.state = Characteristic.PositionState.DECREASING;
 								accessory.updateTimer = setInterval(function () {
 									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 								}.bind(accessory), 500);		
 								break;
 							case 2:
@@ -745,13 +745,13 @@ class LegrandMyHome {
 									accessory.state = Characteristic.PositionState.INCREASING;
 								accessory.updateTimer = setInterval(function () {
 									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
+									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
 								}.bind(accessory), 500);		
 								break;
 						}
-						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).getValue(null);
-						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
-						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
+						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
+						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 					}
 				}.bind(this));
 	}
@@ -761,22 +761,22 @@ class LegrandMyHome {
 			if (accessory.address == _address && accessory.windowCoveringPlusService !== undefined) {
 				if (_action == "STOP") {
 					accessory.currentPosition = accessory.targetPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.CurrentPosition).getValue(null);
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 					accessory.state = Characteristic.PositionState.STOPPED;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
 				} else if (_action == "UP") {
 					accessory.currentPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 
 					accessory.state = Characteristic.PositionState.INCREASING;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
 				} else if (_action == "DOWN") {
 					accessory.currentPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
 
 					accessory.state = Characteristic.PositionState.DECREASING;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
+					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
 				}
 			}
 		}.bind(this));
@@ -787,12 +787,12 @@ class LegrandMyHome {
 			if (accessory.address == _address && accessory.thermostatService !== undefined) {
 				if (_measure == "AMBIENT") {
 					accessory.ambient = _level;
-					accessory.thermostatService.getCharacteristic(Characteristic.CurrentTemperature).getValue(null);
+					accessory.thermostatService.getCharacteristic(Characteristic.CurrentTemperature).emit("get", () => {});
 				}
 				if (_measure == "SETPOINT") {
 					accessory.setpoint = _level;
-					accessory.thermostatService.getCharacteristic(Characteristic.TargetTemperature).getValue(null);
-					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue(null);
+					accessory.thermostatService.getCharacteristic(Characteristic.TargetTemperature).emit("get", () => {});
+					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).emit("get", () => {});
 				}
 				if (_measure == "HEATING") {
 					if (_level == true) {
@@ -801,8 +801,8 @@ class LegrandMyHome {
 						if (accessory.state != Characteristic.CurrentHeatingCoolingState.COOL)
 							accessory.state = Characteristic.CurrentHeatingCoolingState.OFF;
 					}
-					accessory.thermostatService.getCharacteristic(Characteristic.CurrentHeatingCoolingState).getValue(null);
-					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue(null);
+					accessory.thermostatService.getCharacteristic(Characteristic.CurrentHeatingCoolingState).emit("get", () => {});
+					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).emit("get", () => {});
 				}
 				if (_measure == "COOLING") {
 					if (_level == true) {
@@ -811,8 +811,8 @@ class LegrandMyHome {
 						if (accessory.state != Characteristic.CurrentHeatingCoolingState.HEAT)
 							accessory.state = Characteristic.CurrentHeatingCoolingState.OFF;
 					}
-					accessory.thermostatService.getCharacteristic(Characteristic.CurrentHeatingCoolingState).getValue(null);
-					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue(null);
+					accessory.thermostatService.getCharacteristic(Characteristic.CurrentHeatingCoolingState).emit("get", () => {});
+					accessory.thermostatService.getCharacteristic(Characteristic.TargetHeatingCoolingState).emit("get", () => {});
 				}
 			}
 		}.bind(this));
@@ -823,7 +823,7 @@ class LegrandMyHome {
 			if (accessory.address == _address && accessory.thermometerService !== undefined) {
 				if (_measure == "AMBIENT") {
 					accessory.ambient = _level;
-					accessory.thermometerService.getCharacteristic(Characteristic.CurrentTemperature).getValue(null);
+					accessory.thermometerService.getCharacteristic(Characteristic.CurrentTemperature).emit("get", () => {});
 				}
 			}
 		}.bind(this));
@@ -1212,7 +1212,7 @@ class MHBlindAdvanced {
 					this.state = Characteristic.PositionState.DECREASING;
 				}
 				this.mh.advancedBlindCommand(this.address, this.targetPosition);
-				this.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).getValue(null);
+				this.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
 				callback(null);
 			})
 			.on('get', (callback) => {
@@ -1436,8 +1436,8 @@ class MHPowerMeter {
 				this.totalenergytemp = this.totalenergytemp + this.value * this.refresh / 3600 / 1000;
 				this.totalenergy = this.totalenergytemp;
 			}
-			this.powerMeterService.getCharacteristic(LegrandMyHome.CurrentPowerConsumption).getValue(null);
-			this.powerMeterService.getCharacteristic(LegrandMyHome.TotalConsumption).getValue(null);
+			this.powerMeterService.getCharacteristic(LegrandMyHome.CurrentPowerConsumption).emit("get", () => {});
+			this.powerMeterService.getCharacteristic(LegrandMyHome.TotalConsumption).emit("get", () => {});
 			this.powerLoggingService.addEntry({ time: moment().unix(), power: this.value });
 			this.mh.getPower();
 		}.bind(this), this.refresh * 1000);
@@ -1904,7 +1904,7 @@ class MHAlarm {
 				this.log.debug(sprintf("alarm status tampered get = %s", this.tampered));
 				callback(null, this.tampered);
 			});
-		this.alarmBatteryService = new Service.BatteryService(this.name);
+		this.alarmBatteryService = new Service.Battery(this.name);
 		this.alarmBatteryService.getCharacteristic(Characteristic.StatusLowBattery)
 			.on('get', (callback) => {
 				this.log.debug(sprintf("alarm statuslowbatery = %d", this.lowbattery));
@@ -1963,10 +1963,10 @@ class MHControlledLoad {
 				}
 				else {
 					this.forced = 0;
-					this.controlledLoad.getCharacteristic(Characteristic.Active).getValue(null);
+					this.controlledLoad.getCharacteristic(Characteristic.Active).emit("get", () => {});
 					setTimeout(function () {
 						this.forced = 1;
-						this.controlledLoad.getCharacteristic(Characteristic.Active).getValue(null);
+						this.controlledLoad.getCharacteristic(Characteristic.Active).emit("get", () => {});
 					}.bind(this), 500);
 					callback(null);
 				}

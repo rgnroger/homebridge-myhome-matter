@@ -1,6 +1,6 @@
 {
   "name": "homebridge-myhome-own",
-  "version": "0.2.0",
+  "version": "0.2.1-hb2",
   "description": "Legrand MyHome OpenWebNet plugin",
   "license": "MIT",
   "keywords": [
@@ -12,8 +12,8 @@
     "ovn"
   ],
   "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.2.0"
+    "node": ">=18.0.0",
+    "homebridge": ">=1.6.0"
   },
   "author": {
     "name": "LeJeko"
