@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="style.css">
+<main class="myhome">
+  <header><span class="eyebrow">MYHOME · HOMEKIT + MATTER</span><h2>Seus dispositivos, do seu jeito.</h2><p>Adicione uma luz e escolha o tipo: relé liga/desliga ou dimmer.</p></header>
+  <div id="message" role="status" aria-live="polite"></div>
+  <nav aria-label="Modo de configuração"><button id="visual" class="btn btn-primary" type="button">Configuração visual</button><button id="json" class="btn btn-outline-secondary" type="button">JSON avançado</button></nav>
+  <section id="visual-panel">
+    <div class="toolbar"><label>Gateway<select id="gateway" class="form-select"></select></label><button id="add-gateway" class="btn btn-outline-secondary" type="button">Adicionar gateway</button></div>
+    <fieldset><legend>Conexão com o gateway</legend><div class="fields">
+      <label>Nome<input id="gateway-name" class="form-control"></label>
+      <label>IP ou nome do gateway<input id="host" class="form-control" placeholder="192.168.1.35" required></label>
+      <label>Porta<input id="port" type="number" min="1" max="65535" class="form-control"></label>
+      <label>Senha do gateway<input id="password" type="password" class="form-control" autocomplete="off"></label>
+    </div></fieldset>
+    <div class="toolbar"><div><h3>Dispositivos</h3><p>HomeKit permanece ativo. Matter está disponível para relés liga/desliga.</p></div><button id="add" class="btn btn-primary" type="button">+ Adicionar luz</button></div>
+    <div class="tip"><strong>A</strong> = área · <strong>PL</strong> = ponto de luz. A área pode ser <strong>0</strong>. O barramento fica nas opções avançadas.</div>
+    <div id="devices"></div>
+  </section>
+  <section id="json-panel" hidden><label for="raw">Configuração completa deste plugin</label><p>Campos avançados são preservados. Não compartilhe este JSON: ele pode conter a senha do gateway.</p><textarea id="raw" rows="20" class="form-control" spellcheck="false"></textarea><button id="apply-json" class="btn btn-outline-primary" type="button">Aplicar JSON à tela</button></section>
+  <footer><span>Salve no Homebridge e reinicie para aplicar as alterações.</span><button id="save" class="btn btn-success" type="button">Salvar configuração</button></footer>
+</main>
+<script src="config-model.js"></script>
+<script src="ui.js"></script>
