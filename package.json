@@ -1,7 +1,7 @@
 {
   "name": "homebridge-myhome-hb2",
-  "version": "1.0.0",
-  "description": "Legrand BTicino MyHome OpenWebNet plugin - Homebridge 2.0 compatible fork of homebridge-myhome-own",
+  "version": "1.1.0-beta.1",
+  "description": "MyHome/OpenWebNet with visual A/PL configuration, HomeKit and opt-in Matter relays",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
@@ -11,7 +11,8 @@
     "OpenWebNet",
     "MHS1",
     "MyHOMEServer1",
-    "homebridge2"
+    "homebridge2",
+    "supports-matter"
   ],
   "engines": {
     "node": ">=18.0.0",
@@ -22,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/miobio/homebridge-myhome-hb2"
+    "url": "https://github.com/rgnroger/homebridge-myhome-matter"
   },
   "bugs": {
-    "url": "https://github.com/miobio/homebridge-myhome-hb2/issues"
+    "url": "https://github.com/rgnroger/homebridge-myhome-matter/issues"
   },
-  "homepage": "https://github.com/miobio/homebridge-myhome-hb2#readme",
+  "homepage": "https://github.com/rgnroger/homebridge-myhome-matter#readme",
   "dependencies": {
     "debug": "^2.4.5",
     "net": "^1.0.0",
@@ -36,5 +37,26 @@
     "moment": "^2.18.1",
     "correcting-interval": "^2.0.0",
     "fakegato-history": "^0.5.6"
-  }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check index.js && node --check lib/matter-relay.js && node --check homebridge-ui/public/config-model.js && node --check homebridge-ui/public/ui.js"
+  },
+  "contributors": [
+    {
+      "name": "rgnroger"
+    }
+  ],
+  "files": [
+    "index.js",
+    "lib/",
+    "homebridge-ui/",
+    "config.schema.json",
+    "LICENSE",
+    "README.md",
+    "CONFIGURADOR.md",
+    "MATTER-TESTE.md",
+    "sample_config.json",
+    "test/"
+  ]
 }

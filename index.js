@@ -1,5 +1,6 @@
 /*jshint esversion: 6,node: true,-W041: false */
 var path = require("path");
+const matterRelay = require('./lib/matter-relay');
 var mh = require(path.join(__dirname, '/lib/mhclient'));
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits;
 var events = require('events'), util = require('util'), fs = require('fs');
@@ -224,6 +225,7 @@ module.exports = function (homebridge) {
 
 	process.setMaxListeners(0);
 	homebridge.registerPlatform("homebridge-myhome", "LegrandMyHome", LegrandMyHome);
+	homebridge.registerPlatform(matterRelay.PLUGIN, matterRelay.PLATFORM, matterRelay.MatterRelayPlatform);
 
 };
 
@@ -258,6 +260,8 @@ class LegrandMyHome {
 
 		}.bind(this));
 		this.log.info("LegrandMyHome for MyHome Gateway at " + config.ipaddress + ":" + config.port);
+		matterRelay.platforms.add(this);
+		if (api) api.on('shutdown', () => matterRelay.platforms.delete(this));
 		this.controller.start();
 	}
 
@@ -296,19 +300,23 @@ class LegrandMyHome {
 			this.devices.forEach(function (accessory) {
 				if (accessory.address == _address && accessory.lightBulbService !== undefined) {
 					accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 					accessory.bri = _onoff * 100;
 					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.rainService !== undefined) {
 					accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 					accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.OutletService !== undefined) {
 					accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 					accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 				}
 				if (accessory.address == _address && accessory.IrrigationService !== undefined) {
 					accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 					accessory.IrrigationService.getCharacteristic(Characteristic.Active).emit("get", () => {});
 					accessory.IrrigationService.getCharacteristic(Characteristic.InUse).emit("get", () => {});
 				}
@@ -318,15 +326,18 @@ class LegrandMyHome {
 				this.devices.forEach(function (accessory) {
 					if (accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.bri = _onoff * 100;
 						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 				}.bind(this));
@@ -334,15 +345,18 @@ class LegrandMyHome {
 				this.devices.forEach(function (accessory) {
 					if (accessory.ambient == a && accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.bri = _onoff * 100;
 						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.rainService.getCharacteristic(Characteristic.CurrentRelativeHumidity).emit("get", () => {});
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
+					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
 					}
 				}.bind(this));
@@ -859,6 +873,17 @@ class MHRelay {
 		this.pl = parseInt(address[2]);
 	}
 
+	setPower(on, fromMatter = false) {
+		// Preserve the legacy optimistic command semantics and custom frames.
+		if (on && this.config.frame_on != null) this.mh.send(this.config.frame_on);
+		else if (!on && this.config.frame_off != null) this.mh.send(this.config.frame_off);
+		else this.mh.relayCommand(this.address, on);
+		this.power = Boolean(on);
+		if (this.power && this.bri == 0) this.bri = 100;
+		if (this.lightBulbService) this.lightBulbService.updateCharacteristic(Characteristic.On, this.power);
+		if (this.matterRelay && !fromMatter) this.matterRelay.sync(this.power);
+	}
+
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
@@ -879,20 +904,7 @@ class MHRelay {
 
 		this.lightBulbService.getCharacteristic(Characteristic.On)
 			.on('set', (level, callback) => {
-				this.log.debug(sprintf("setPower %s = %s", this.address, level));
-				this.power = (level > 0);
-				if (this.power && this.bri == 0) {
-					this.bri = 100;
-				}
-
-				/* Custom frame support */
-				if (this.power && this.config.frame_on != null) {
-					this.mh.send(this.config.frame_on);
-				} else if (!this.power && this.config.frame_off != null) {
-					this.mh.send(this.config.frame_off);
-				} else {
-					this.mh.relayCommand(this.address, this.power);
-				}
+				this.setPower(level > 0);
 				callback(null);
 			})
 			.on('get', (callback) => {

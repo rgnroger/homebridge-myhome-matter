@@ -1,174 +1,44 @@
-<p align="center">
-  <a href="https://github.com/homebridge/homebridge"><img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png" height="140"></a>
-</p>
+# MyHome Matter
 
-<span align="center">
+Fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myhome-hb2), com tela de configuração para Homebridge e publicação opcional de relés via Matter.
 
-# homebridge-myhome-own
+## O que está disponível
 
-[![npm](https://img.shields.io/npm/v/homebridge-myhome-own.svg)](https://www.npmjs.com/package/homebridge-myhome-own)
+- Cadastro de luzes pela tela, com **A** (área) e **PL** (ponto de luz) separados. Área **0** aceita; barramento nas opções avançadas.
+- Tipos **Relé liga/desliga** e **Dimmer**. Dimmers controlam brilho pelo HomeKit; Matter está implementado apenas para MHRelay.
+- Seleção de vários relés Matter, preservando HAP/HomeKit.
+- Editor JSON e preservação dos campos avançados existentes.
+- Remoção de acessórios Matter desmarcados após salvar e reiniciar.
 
-</span>
+## Estado da beta
 
-## Homebridge 2.0 Compatibility Fix
+Versão **1.1.0-beta.1**. O controle físico de um MHRelay pela Alexa foi validado na versão anterior 1.0.1-matter-test.1, com Homebridge 2.4.0. A nova tela e a seleção de vários relés passaram em testes locais; a validação desta beta em equipamento real está em andamento.
 
-This fork adds compatibility with **Homebridge 2.0** and **Node.js >= 18**.
+Matter exige suporte e configuração Matter no Homebridge. O gateway e a plataforma complementar devem estar no mesmo processo. O transporte OpenWebNet mantém o comportamento otimista do original: enviar/enfileirar um comando não confirma execução física.
 
-The original plugin by [LeJeko](https://github.com/LeJeko/homebridge-myhome) stopped working with Homebridge 2.0 due to breaking API changes. The following fixes have been applied:
+## Instalação
 
-| Issue | Fix |
-|---|---|
-| `new Buffer()` deprecated | → `Buffer.from()` |
-| `Service.BatteryService` removed | → `Service.Battery` |
-| `.getValue(null)` removed (84 occurrences) | → `.emit('get', () => {})` |
-| `package.json engines` outdated | → Node `>=18`, HB `>=1.6.0` |
+O nome npm **homebridge-myhome-hb2** é mantido para substituir a versão instalada, sem criar um segundo plugin. Este fork não está publicado no npm. Instale o arquivo .tgz da versão ou este repositório no diretório real da instalação existente:
 
-> **Note:** The configuration format is identical to the original plugin — no changes needed if you are migrating from the original `homebridge-myhome-own`.
-
-### Compatibility with MyHOMEServer1 (MHS1)
-
-This plugin supports **HMAC authentication** with alphanumeric passwords, which is required by the MyHOMEServer1 gateway. The `ownpassword` field accepts alphanumeric passwords as set in the Home+Project app.
-
----
-
-## Why own?
-
-Short answer: OpenWebNet.
-This is a fork of a great but unpublished package of [simon77](https://github.com/simont77/homebridge-myhome), forked from [angeloxx](https://github.com/angeloxx/homebridge-myhome) which was created 4 years ago.
-Furthermore, on npm the __homebridge-myhome__ package is already occupied by [another inactive user](https://www.npmjs.com/package/homebridge-myhome) for 4 years as well. In addition, links to Github are directed to a "Lockitron" stuff...
-So I decided to add a revealing acronym to distinguish them on npm with the ability to stay in a branch of the original homebridge-myhome github fork.
-
-## Description
-Legrand (BTicino) MyHome plugin with Elgato Eve history feature for contact, motion sensor and powermeter.
-
-Legrand [MyHome](http://www.homesystems-legrandgroup.com/BtHomeSystems/home.action) is an Home Automation solution that can manage:
-- lighting (standard on/off/dimmed lights)
-- thermoregulation 
-- curtains, doors
-- security systems
-- contact and motion sensors
-
-With this plugin, the support of a IP gateway installed in your plant and a configuration of all installed 
-systems (MyHome does not support the autodiscovery of the system) you can control it. You need to disable the OpenWebNet password-based authentication from the IP of the device that runs homebridge (ie. Raspberry) or set the authentication to HMAC; 
-HMAC authentication is supported by all recent IP gateways or older one with updated firmware (eg. F454 with v2 firmware) and is required by MyHOMEServer1.
-
-# Installation
-
-Install the plugin from your fork:
-```shell
-npm install -g miobio/homebridge-myhome
+```sh
+npm install github:rgnroger/homebridge-myhome-matter
 ```
 
-Or install manually:
-```shell
-cd /var/lib/homebridge
-npm uninstall homebridge-myhome-own
-npm install /path/to/homebridge-myhome-own-hb2
+Faça backup antes de atualizar. Na instalação Docker em que /var/lib/homebridge é um link para /homebridge, entre em **/homebridge** antes de instalar. Não mantenha duas cópias do plugin.
+
+Consulte [CONFIGURADOR.md](CONFIGURADOR.md) para configuração, exemplo JSON e instalação de pacote local. Trocar o tipo de um dispositivo existente de relé para dimmer altera seu tipo/identidade HAP; prefira cadastrar o tipo correto desde o início.
+
+## Testes
+
+```sh
+npm test
+npm run check
 ```
 
-Add platform within config.json of your homebridge instance:
+Os testes de lógica usam APIs simuladas, sem acionar dispositivos. Não há etapa de compilação: o plugin é JavaScript.
 
-```json
-{
-    "platforms": [{
-        "platform": "LegrandMyHome",
-        "ipaddress": "192.168.1.35",
-        "port": 20000,
-        "ownpassword": "yourpassword",
-        "setclock": true,
-        "devices": [
-                /*Static list of devices*/
-            ]
-        }], 
-    "bridge": {
-        "username": "CC:22:3D:E3:CE:31", 
-        "name": "MyHome HomeBridge Adapter", 
-        "pin": "342-52-220", 
-        "port": 51826
-    }, 
-    "description": "My Fantastic Legrand MyHome System", 
-    "accessories": []
-}
-```
-Restart homebridge.
+## Créditos e licença
 
-## Configuration
+Mantido sob a [licença MIT](LICENSE), com os avisos originais de angeloxx, Simone Tisa e LeJeko. Base modernizada por miobio; melhorias de configuração e Matter neste fork de rgnroger. O projeto [bvial/homebridge-myhome](https://github.com/bvial/homebridge-myhome) foi referência para a experiência de configuração; nenhum código dele foi incorporado.
 
-Only the platforms section of the config.json file should be edited, the pair code and the port in bridge section can be ignored in most of the cases. 
-The first part of the config file contains details about the MyHome Gateway used to interface the IP network with the plant:
-```json
-"platforms": [{
-    "platform": "LegrandMyHome",
-    "ipaddress": "192.168.1.35",
-    "port": 20000,
-    "ownpassword": "12345",
-    "setclock": true,
-    "devices": [{
-```
-
-You need to change:
-- ipaddress: put the IP address or name of the MyHome Gateway (eg. F454, MH201 or MyHOMEServer1)
-- port: should be 20000 and keep this value
-- ownpassword: the OpenWebNet password. Alphanumeric passwords (required by MyHOMEServer1) are supported.
-- setclock: set to true if you want your homebridge server to set the time of your gateway every hour
-- devices: list of installed devices
-
-The devices section contains the list of devices that will be managed. All devices contains three standard properties:
-
-- accessory: the technical name of the device, should be one of the names listed in this document
-- name: mnemonic name, will be displayed by iOS HomeKit application
-- address: the MyHome address, usually in **B/A/PL** format for lights and curtains or single/double digits for other devices. **B** stands for BUS (usually 0), **A** and **PL** is the name of the addressing object used by BTicino and stands for Ambient and Light Point (Punto Luce in the original italian version)
-
-## Supported devices
-
-* MHRelay: Standard (Lighting) Relay (eg. F411), address is B/A/PL (eg. 0/1/10). This device supports the definition of a custom frame for on and off command, so you can specify frame\_on and/or frame\_off:
-
-    ```json
-    {
-    "accessory": "MHRelay",
-    "name": "Bathroom Light",
-    "address": "0/1/5",
-    "frame_on": "*1*1*14##",
-    "frame_off": "*1*0*14##"
-    }
-    ```
-    to use a Group, CEN, CEN+ or other command to turn on and off that load, using the _address_ load for the status monitor. Remember that HomeKit will think that the load has changed the status after the command even if is not true.
-
-* MHDimmer: Lighting Dimmer (eg. F427, F413N), address is B/A/PL (eg. 0/1/10)
-* MHThermostat: Standard Thermostat controlled by a 99-Zones Central Station (code 3550), address is the Zone Identifier (1-99)
-* MHExternalThermometer: External Probe controlled by a 99-Zones Central Station (code 3550), address is the Zone Identifier (1-9)
-* MHOutlet: Standard (not-Lighting) Relay, address is B/A/PL (eg. 0/1/10). See MHRelay for custom frame support
-* MHBlind: Standard Automation Relay (eg. F411), address is B/A/PL (eg. 0/1/10)
-  * this device defines another property called "time" that defines the configured "stop time" in seconds; using this property the driver can evaluate the current position of the blind
-* MHBlindAdvanced: Advanced version of standard Blind (eg. F401 that manages internally the current position), address is B/A/PL (eg. 0/1/10)
-* MHContactSensor: Dry Contact sensor (eg. 3477 or some burgalarm sensors), address range is 1-201. Supported types are "motion" and "contact". Elgato Eve history feature is supported.
-* MHPowerMeter: Only supported with F421 Load Control Central, use "refresh" to set the update interval. Elgato Eve history feature is supported.
-* MHAlarm: tested on central 3486. Zones for Away, Night and At Home activation are currently hard coded in plugin code. Alarm activation/deactivation from Homekit is not implemented for security reasons, so only monitor of the current status is supported
-* MHTimedRelay: to issue temporized command to relays. Default duration set in "duration"
-* MHControlledLoad: to control status of old generation Load Control outlets
-* MHAux: to deliver AUX events to Homekit. Supported type are "leak", "gas" and "contact".
-* MHIrrigation: modified MHTimedRelay using the new Homekit irrigation service
-
-See sample-config.json for the additional parameters of each accessory.
-
-## Tested devices
-- F453, F454v1, MH200N, MH201 and MyHOMEServer1 (firmware 2.x) as IP Gateway
-- F411/2 as MHRelay, MHOutlet and MHCurtain
-- F401 as MHBlindAdvanced
-- F416U1 as MHDimmer
-- 3455 as MHExternalThermometer
-- 3477 as MHContactSensor
-
-## Known Bug List
-
-- Groups are not managed
-
-## Credits
-https://github.com/angeloxx/homebridge-myhome : First version  
-https://github.com/simont77/homebridge-myhome : Added accessories and Elgato Eve history  
-https://github.com/LeJeko/homebridge-myhome : homebridge-myhome-own package  
-
-# Disclaimer
-
-I'm furnishing this software "as is". I do not provide any warranty of the item whatsoever, whether express, implied, or statutory, including, but not limited to, any warranty of merchantability or fitness for a particular purpose or any warranty that the contents of the item will be error-free.
-The development of this module is not supported by Legrand, BTicino or Apple. These vendors and me are not responsible for direct, indirect, incidental or consequential damages resulting from any defect, error or failure to perform.  
+Projeto independente, sem afiliação oficial com BTicino, Legrand, Amazon ou Apple.
