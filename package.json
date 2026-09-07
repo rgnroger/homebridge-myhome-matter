@@ -1,6 +1,6 @@
 {
   "name": "homebridge-myhome-hb2",
-  "version": "1.1.0-beta.1",
+  "version": "1.1.0-beta.2",
   "description": "MyHome/OpenWebNet with visual A/PL configuration, HomeKit and opt-in Matter relays",
   "license": "MIT",
   "keywords": [
@@ -36,11 +36,12 @@
     "sprintf-js": "^1.0.3",
     "moment": "^2.18.1",
     "correcting-interval": "^2.0.0",
-    "fakegato-history": "^0.5.6"
+    "fakegato-history": "^0.5.6",
+    "@homebridge/plugin-ui-utils": "2.2.6"
   },
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check index.js && node --check lib/matter-relay.js && node --check homebridge-ui/public/config-model.js && node --check homebridge-ui/public/ui.js"
+    "check": "node --check index.js && node --check lib/matter-relay.js && node --check homebridge-ui/public/config-model.js && node --check homebridge-ui/public/ui.js && node --check homebridge-ui/server.js && node --check homebridge-ui/config-store.js"
   },
   "contributors": [
     {
