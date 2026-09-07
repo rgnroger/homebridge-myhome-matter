@@ -3,19 +3,17 @@
 (async function () {
     const M = MyHomeConfig, hb = window.homebridge;
     const el = id => document.getElementById(id);
-    let blocks, selected = 0, rawMode = false, queue = Promise.resolve(), lastError = false, revision = 0;
+    let blocks, diskRevision, selected = 0, rawMode = false, queue = Promise.resolve(), lastError = false, revision = 0;
     const gateways = () => blocks.filter(p => p.platform === M.HAP);
     const current = () => gateways()[selected];
     function message(text, error = false) { el('message').textContent = text; el('message').className = error ? 'error' : ''; }
     function schedule() {
         const request = ++revision;
         try {
-            const prepared = M.prepare(blocks);
+            M.prepare(blocks);
             hb.disableSaveButton();
             lastError = false;
-            queue = queue.catch(() => {}).then(() => hb.updatePluginConfig(prepared)).then(() => {
-                if (!lastError && request === revision && !rawMode) hb.enableSaveButton();
-            }).catch(error => { lastError = true; hb.disableSaveButton(); message(error.message, true); });
+            // The host only handles one platform alias. Our server saves both aliases together.
             message('Alterações prontas. Salve e reinicie o Homebridge para aplicar.');
         } catch (error) { lastError = true; hb.disableSaveButton(); message(error.message, true); }
     }
@@ -45,14 +43,18 @@
             head.append(title, remove); card.append(head);
             const fields = document.createElement('div'); fields.className = 'fields';
             fields.append(input('Nome', d.name, v => { d.name = v; title.textContent = v || 'Novo relé'; }));
-            const kind = document.createElement('label'); kind.textContent = 'Tipo';
-            const typeName = document.createElement('select'); typeName.className = 'form-select';
+            const kind = document.createElement('div'); kind.className = 'kind';
+            const kindLabel = document.createElement('span'); kindLabel.textContent = 'Tipo';
+            const typeName = document.createElement('div'); typeName.className = 'type-buttons';
             const choices = [['MHRelay', 'Relé liga/desliga'], ['MHDimmer', 'Dimmer · HomeKit']];
-            if (!choices.some(([value]) => value === d.accessory)) choices.push([d.accessory, d.accessory + ' · HomeKit']);
-            for (const [value, label] of choices) { const option = document.createElement('option'); option.value = value; option.textContent = label; typeName.append(option); }
-            typeName.value = d.accessory;
-            typeName.onchange = () => { d.accessory = typeName.value; if (d.accessory !== 'MHRelay') d.matter = false; render(); schedule(); };
-            kind.append(typeName); fields.append(kind);
+            if (!choices.some(([value]) => value === d.accessory)) choices.push([d.accessory, 'Manter ' + d.accessory]);
+            for (const [value, label] of choices) {
+                const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
+                button.className = 'btn btn-sm ' + (d.accessory === value ? 'btn-primary' : 'btn-outline-secondary');
+                button.onclick = () => { d.accessory = value; if (value !== 'MHRelay') d.matter = false; render(); schedule(); };
+                typeName.append(button);
+            }
+            kind.append(kindLabel, typeName); fields.append(kind);
             let advanced;
             if (['MHRelay', 'MHDimmer'].includes(d.accessory) || /^\d+\/\d+\/\d+$/.test(d.address || '')) {
                 // Keep the original strings (including leading zeros) until edited.
@@ -87,12 +89,20 @@
         hb.fixScrollHeight();
     }
     try {
-        blocks = M.load(await hb.getPluginConfig());
+        const saved = await hb.request('/myhome/config');
+        diskRevision = saved.revision;
+        blocks = M.load(saved.blocks);
         render();
         // Do not migrate or save existing config merely by opening the editor.
         hb.disableSaveButton();
         el('gateway').onchange = () => { selected = Number(el('gateway').value); render(); };
-        el('add').onclick = () => { current().devices.push({ accessory: 'MHRelay', name: '', address: '', matter: false }); render(); schedule(); };
+        el('add').onclick = () => {
+            current().devices.unshift({ accessory: 'MHRelay', name: '', address: '', matter: false });
+            render(); schedule();
+            const first = el('devices').querySelector('.device');
+            first?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            first?.querySelector('input')?.focus();
+        };
         el('add-gateway').onclick = () => { blocks.push({ platform: M.HAP, name: 'MyHome', ipaddress: '', port: 20000, devices: [] }); selected = gateways().length - 1; render(); schedule(); };
         el('json').onclick = () => { rawMode = true; revision++; el('raw').value = JSON.stringify(blocks, null, 2); el('visual-panel').hidden = true; el('json-panel').hidden = false; hb.disableSaveButton(); hb.fixScrollHeight(); };
         el('raw').oninput = () => { revision++; hb.disableSaveButton(); };
@@ -108,7 +118,8 @@
                 if (rawMode) applyJson(); else schedule();
                 await queue;
                 if (lastError) return;
-                await hb.savePluginConfig();
+                const saved = await hb.request('/myhome/save', { blocks: M.prepare(blocks), revision: diskRevision });
+                diskRevision = saved.revision;
                 message('Configuração salva. Reinicie o Homebridge para aplicar.');
             } catch (error) { message(error.message, true); }
             finally { el('save').disabled = false; }
