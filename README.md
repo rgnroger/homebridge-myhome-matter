@@ -12,7 +12,7 @@ Fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myho
 
 ## Estado da beta
 
-Versão **1.1.0-beta.2**. O controle físico de um MHRelay pela Alexa foi validado na versão anterior 1.0.1-matter-test.1, com Homebridge 2.4.0. A nova tela e a seleção de vários relés passaram em testes locais; a validação desta beta em equipamento real está em andamento.
+Versão **1.1.0-beta.3**. O controle físico de um MHRelay pela Alexa foi validado com Homebridge 2.4.0. A tela carrega a configuração real, adiciona novos dispositivos no topo e usa botões diretos para escolher relé ou dimmer.
 
 Matter exige suporte e configuração Matter no Homebridge. O gateway e a plataforma complementar devem estar no mesmo processo. O transporte OpenWebNet mantém o comportamento otimista do original: enviar/enfileirar um comando não confirma execução física.
 

@@ -1,4 +1,4 @@
-# Configurador MyHome — 1.1.0-beta.2
+# Configurador MyHome — 1.1.0-beta.3
 
 Esta versão adiciona uma tela ao botão de configurações do plugin no Homebridge. O suporte Matter permite selecionar vários relés MHRelay existentes ou novos, incluindo a área zero. O nome npm continua `homebridge-myhome-hb2` para permitir atualizar a instalação atual sem duplicar plugins. Distribuição pelo fork rgnroger/homebridge-myhome-matter no GitHub. Não publicada no npm.
 
@@ -49,7 +49,7 @@ Faça backup antes. Transfira o novo arquivo `.tgz` para a pasta persistente do 
 
 ```sh
 cd /homebridge
-npm install ./homebridge-myhome-hb2-1.1.0-beta.2.tgz --no-audit --no-fund
+npm install ./homebridge-myhome-hb2-1.1.0-beta.3.tgz --no-audit --no-fund
 ```
 
 Reinicie o Homebridge e abra as configurações do plugin. Não instale globalmente em paralelo. Em outra instalação, use o diretório real que já contém o `package.json` e o plugin atual.
