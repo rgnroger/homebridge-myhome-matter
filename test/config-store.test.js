@@ -1,0 +1,28 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const Store = require('../homebridge-ui/config-store');
+const M = require('../homebridge-ui/public/config-model');
+test('reads both aliases and saves migration without losing unrelated configuration', t => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'myhome-'));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+    const file = path.join(dir, 'config.json');
+    const other = { platform: 'config', name: 'Config', custom: true };
+    const original = { bridge: { name: 'Home' }, platforms: [other, { platform: M.HAP, ipaddress: 'gateway', devices: [{ accessory: 'MHRelay', name: 'Test', address: '0/0/3' }] }, { platform: M.MATTER, address: '0/0/3', enabled: true }] };
+    fs.writeFileSync(file, JSON.stringify(original));
+    const store = new Store(file), read = store.read();
+    assert.equal(read.blocks.length, 2);
+    assert.deepEqual(JSON.parse(fs.readFileSync(file)), original);
+    store.save({ blocks: M.load(read.blocks), revision: read.revision });
+    const saved = JSON.parse(fs.readFileSync(file));
+    assert.deepEqual(saved.platforms[0], other);
+    assert.deepEqual(saved.bridge, original.bridge);
+    assert.equal(saved.platforms.length, 3);
+    assert.equal(saved.platforms[1].devices[0].matter, true);
+    assert.equal(saved.platforms[2].mode, 'configured');
+    assert.throws(() => store.save({ blocks: read.blocks, revision: read.revision }), /mudou/);
+    assert.throws(() => store.save({ blocks: [other], revision: store.read().revision }), /Somente/);
+    assert.equal(fs.readdirSync(dir).filter(n => n.includes('backup')).length, 1);
+});
