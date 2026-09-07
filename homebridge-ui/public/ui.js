@@ -112,17 +112,21 @@
             if (rawMode) { try { applyJson(); } catch (error) { message(error.message, true); return; } }
             rawMode = false; el('visual-panel').hidden = false; el('json-panel').hidden = true; hb.fixScrollHeight();
         };
-        el('save').onclick = async () => {
-            el('save').disabled = true;
+        async function saveAndRestart() {
+            const buttons = [...document.querySelectorAll('.save-restart')];
+            buttons.forEach(button => { button.disabled = true; });
             try {
                 if (rawMode) applyJson(); else schedule();
                 await queue;
                 if (lastError) return;
                 const saved = await hb.request('/myhome/save', { blocks: M.prepare(blocks), revision: diskRevision });
                 diskRevision = saved.revision;
-                message('Configuração salva. Reinicie o Homebridge para aplicar.');
+                message('Configuração salva. Reiniciando o Homebridge…');
+                await hb.request('/myhome/restart');
             } catch (error) { message(error.message, true); }
-            finally { el('save').disabled = false; }
-        };
-    } catch (error) { hb.disableSaveButton(); message(error.message, true); el('save').disabled = true; }
+            finally { buttons.forEach(button => { button.disabled = false; }); }
+        }
+        el('save-restart-top').onclick = saveAndRestart;
+        el('save-restart-bottom').onclick = saveAndRestart;
+    } catch (error) { hb.disableSaveButton(); message(error.message, true); document.querySelectorAll('.save-restart').forEach(button => { button.disabled = true; }); }
 })();

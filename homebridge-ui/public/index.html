@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="style.css">
 <main class="myhome">
-  <header><span class="eyebrow">MYHOME · HOMEKIT + MATTER</span><h2>Seus dispositivos, do seu jeito.</h2><p>Adicione uma luz e escolha o tipo: relé liga/desliga ou dimmer.</p></header>
+  <header><span class="eyebrow">MYHOME · HOMEKIT + MATTER</span><div class="header-row"><div><h2>Seus dispositivos, do seu jeito.</h2><p>Adicione uma luz e escolha o tipo: relé liga/desliga ou dimmer.</p></div><button id="save-restart-top" class="btn btn-success save-restart" type="button">Salvar e reiniciar</button></div></header>
   <div id="message" role="status" aria-live="polite"></div>
   <nav aria-label="Modo de configuração"><button id="visual" class="btn btn-primary" type="button">Configuração visual</button><button id="json" class="btn btn-outline-secondary" type="button">JSON avançado</button></nav>
   <section id="visual-panel">
@@ -16,7 +16,7 @@
     <div id="devices"></div>
   </section>
   <section id="json-panel" hidden><label for="raw">Configuração completa deste plugin</label><p>Campos avançados são preservados. Não compartilhe este JSON: ele pode conter a senha do gateway.</p><textarea id="raw" rows="20" class="form-control" spellcheck="false"></textarea><button id="apply-json" class="btn btn-outline-primary" type="button">Aplicar JSON à tela</button></section>
-  <footer><span>Salve no Homebridge e reinicie para aplicar as alterações.</span><button id="save" class="btn btn-success" type="button">Salvar configuração</button></footer>
+  <footer><span>Salve e reinicie o Homebridge para aplicar as alterações.</span><button id="save-restart-bottom" class="btn btn-success save-restart" type="button">Salvar e reiniciar</button></footer>
 </main>
 <script src="config-model.js"></script>
 <script src="ui.js"></script>
