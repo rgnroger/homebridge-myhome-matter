@@ -1,6 +1,6 @@
 # Alterações
 
-## 1.1.0-beta.5 — instalação limpa
+## 1.1.0-beta.6 — instalação limpa
 
 - Identificação da plataforma HomeKit corrigida de `homebridge-myhome` para o nome real do pacote, `homebridge-myhome-hb2`.
 - Inicialização sem gateway/dispositivos aguarda cadastro, sem abrir conexões ou falhar por campos ausentes; porta padrão 20000 aplicada também no código.

@@ -1,4 +1,4 @@
-# Configurador — 1.1.0-beta.5
+# Configurador — 1.1.0-beta.6
 
 Siga a [instalação limpa](README.md). O cadastro começa com gateway vazio e nenhum dispositivo. Informe os dados OpenWebNet do novo local: IP/hostname, porta (padrão 20000) e senha. Os endereços não são descobertos automaticamente.
 
