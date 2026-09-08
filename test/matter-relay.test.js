@@ -5,6 +5,7 @@ const { EventEmitter } = require('node:events');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const { MatterRelayPlatform, platforms } = require('../lib/matter-relay');
+const { MyHomeClient } = require('../lib/mhclient');
 
 // Exercise actual legacy relay/platform methods without sockets or third-party timers.
 const sandbox = { require: name => {
@@ -13,8 +14,8 @@ const sandbox = { require: name => {
     if (name === 'sprintf-js') return { sprintf: (s, ...args) => s.replace(/%s/g, () => args.shift()) };
     if (['path', 'util', 'events', 'fs'].includes(name)) return require(name);
     return {};
-}, module: { exports: {} }, __dirname: require('node:path').resolve(__dirname, '..'), Buffer };
-vm.runInNewContext(fs.readFileSync(require.resolve('../index'), 'utf8') + '\nmodule.exports = { MHRelay, LegrandMyHome }; Characteristic = { On: "On" };', sandbox);
+}, module: { exports: {} }, __dirname: require('node:path').resolve(__dirname, '..'), Buffer, setTimeout, clearTimeout };
+vm.runInNewContext(fs.readFileSync(require.resolve('../index'), 'utf8') + '\nmodule.exports = { MHRelay, LegrandMyHome }; Characteristic = { On: "On", Active: "Active", ContactSensorState: "ContactSensorState", LeakDetected: "LeakDetected", MotionDetected: "MotionDetected", Brightness: "Brightness" };', sandbox);
 const { MHRelay, LegrandMyHome } = sandbox.module.exports;
 const log = { info() {}, warn() {}, error() {}, debug() {} };
 afterEach(() => platforms.clear());
@@ -24,7 +25,7 @@ function fixture(config = {}) {
     const relay = Object.assign(Object.create(MHRelay.prototype), {
         config: { accessory: 'MHRelay' }, address: '0/0/3', name: 'EMBUTIDO 1', power: false,
         bri: 0, ambient: 0, pul: false,
-        mh: { send: frame => calls.push(['frame', frame]), relayCommand: (...args) => calls.push(['command', ...args]) },
+        mh: { send: frame => calls.push(['frame', frame]), relayCommand: (...args) => calls.push(['command', ...args]), getRelayState: a => calls.push(['query', a]) },
         lightBulbService: { updateCharacteristic: (...args) => calls.push(['hap', ...args]), getCharacteristic: () => ({ emit() {} }) },
     });
     const parent = { config: { ipaddress: '192.0.2.1', port: 20000 }, devices: [relay], controller: { getRelayState: a => calls.push(['query', a]) } };
@@ -68,12 +69,36 @@ test('HAP and individual/general monitor events synchronize Matter without comma
     assert.equal(f.calls.filter(c => c[0] === 'state').at(-1)[3].onOff, true);
     const count = f.calls.filter(c => c[0] === 'command').length;
     LegrandMyHome.prototype.onRelay.call(f.parent, '0/0/3', false);
+    assert.ok(f.calls.some(c => c[0] === 'hap' && c[1] === 'On' && c[2] === false));
     await Promise.all([...f.bridge.bindings.values()].map(b => b.pending));
     assert.equal(f.calls.filter(c => c[0] === 'state').at(-1)[3].onOff, false);
     LegrandMyHome.prototype.onRelay.call(f.parent, '0/0/0', true);
     await Promise.all([...f.bridge.bindings.values()].map(b => b.pending));
     assert.equal(f.calls.filter(c => c[0] === 'state').at(-1)[3].onOff, true);
     assert.equal(f.calls.filter(c => c[0] === 'command').length, count);
+});
+
+test('command replies and contact/scenario events publish fresh HomeKit values', () => {
+    const relayEvents = [];
+    const client = Object.assign(Object.create(MyHomeClient.prototype), {
+        parent: { onMonitor() {}, onRelay: (...args) => relayEvents.push(args) },
+        dimmerLevels: [0, 100, 1, 10, 20, 30, 40, 50, 60, 75, 100],
+    });
+    client.onCommand('*1*1*03##');
+    assert.deepEqual(relayEvents, [['0/0/3', true]]);
+
+    const updates = [];
+    const service = { updateCharacteristic: (...args) => updates.push(args) };
+    const parent = { devices: [
+        { address: 7, type: 'Contact', state: false, dryContactService: service },
+        { address: 8, state: 0, running: 0, scenarioService: service },
+    ] };
+    LegrandMyHome.prototype.onDryContact.call(parent, 7, true);
+    LegrandMyHome.prototype.onScenarioEnable.call(parent, 8, true);
+    LegrandMyHome.prototype.onScenarioRun.call(parent, 8, true);
+    assert.ok(updates.some(update => update[0] === 'ContactSensorState' && update[1] === true));
+    assert.ok(updates.some(update => update[0] === 'Active' && update[1] === 1));
+    assert.ok(updates.some(update => update[1] === true));
 });
 
 test('restart reuses UUID, restores handlers, removes stale cached targets', async () => {
