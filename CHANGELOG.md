@@ -1,5 +1,13 @@
 # Alterações
 
+## 1.1.0-beta.8 — confirmação de reinício e sincronização
+
+- Depois de salvar, o configurador oferece `Reiniciar agora` ou `Depois` na própria janela.
+- O reinício só é solicitado depois que a validação e a gravação terminam com sucesso.
+- Comandos HomeKit não atualizam novamente a mesma característica durante a requisição HAP.
+- Comandos Matter pedem o estado real do relé ao gateway após o acionamento.
+- Arquivos da tela usam a versão no endereço para evitar JavaScript antigo em cache.
+
 ## 1.1.0-beta.7 — publicação npm
 
 - Publicado como `homebridge-myhome-matter`, separado do pacote original.

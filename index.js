@@ -891,7 +891,9 @@ class MHRelay {
 		else this.mh.relayCommand(this.address, on);
 		this.power = Boolean(on);
 		if (this.power && this.bri == 0) this.bri = 100;
-		if (this.lightBulbService) this.lightBulbService.updateCharacteristic(Characteristic.On, this.power);
+		// A HomeKit set already updates its own characteristic. Updating it again here
+		// can overlap the active HAP request; only bridge Matter commands into HAP.
+		if (fromMatter && this.lightBulbService) this.lightBulbService.updateCharacteristic(Characteristic.On, this.power);
 		if (this.matterRelay && !fromMatter) this.matterRelay.sync(this.power);
 	}
 
