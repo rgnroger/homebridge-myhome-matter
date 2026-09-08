@@ -1,0 +1,52 @@
+name: Publish beta
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - name: Prepare beta 7
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const pkg = require("./package.json");
+          pkg.name = "homebridge-myhome-matter";
+          pkg.version = "1.1.0-beta.7";
+          if (!pkg.keywords.includes("supports-hap")) pkg.keywords.splice(pkg.keywords.indexOf("supports-matter"), 0, "supports-hap");
+          fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+          const lock = require("./package-lock.json");
+          lock.name = lock.packages[""].name = pkg.name;
+          lock.version = lock.packages[""].version = pkg.version;
+          fs.writeFileSync("package-lock.json", JSON.stringify(lock, null, 2) + "\n");
+          const replace = (file, from, to) => fs.writeFileSync(file, fs.readFileSync(file, "utf8").replaceAll(from, to));
+          replace("lib/matter-relay.js", "homebridge-myhome-hb2", pkg.name);
+          replace("test/startup.test.js", "homebridge-myhome-hb2", pkg.name);
+          replace("README.md", "1.1.0-beta.6", pkg.version);
+          replace("README.md", "homebridge-myhome-hb2-1.1.0-beta.6.tgz", pkg.name + "-" + pkg.version + ".tgz");
+          replace("README.md", "Plugins → homebridge-myhome-hb2", "Plugins → " + pkg.name);
+          replace("CONFIGURADOR.md", "1.1.0-beta.6", pkg.version);
+          replace("CONFIGURADOR.md", "homebridge-myhome-hb2` nos registros", pkg.name + "` nos registros");
+          const log = fs.readFileSync("CHANGELOG.md", "utf8");
+          fs.writeFileSync("CHANGELOG.md", log.replace("# Alterações\n", "# Alterações\n\n## 1.1.0-beta.7 — publicação npm\n\n- Publicado como `homebridge-myhome-matter`, separado do pacote original.\n- Metadados de suporte HomeKit e Matter adicionados ao catálogo.\n"));
+          NODE
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - name: Commit release
+        run: |
+          git config user.name "rgnroger"
+          git config user.email "rgnroger@gmail.com"
+          git add CHANGELOG.md CONFIGURADOR.md README.md lib/matter-relay.js package.json package-lock.json test/startup.test.js
+          git commit -m "Publish homebridge-myhome-matter beta 7"
+          git tag v1.1.0-beta.7
+          git push origin HEAD:master --follow-tags
+      - run: npm publish --tag beta --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
