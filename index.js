@@ -288,7 +288,7 @@ class LegrandMyHome {
 				this.controller.getContactState(accessory.address);
 			if (accessory.windowCoveringPlusService !== undefined)
 				this.controller.getAdvancedBlindState(accessory.address);
-			if (accessory.lightBulbService !== undefined && accessory.pul == true)
+			if (accessory.lightBulbService !== undefined)
 				this.controller.getRelayState(accessory.address);
 			if (accessory.rainService !== undefined && accessory.pul == true)
 				this.controller.getRelayState(accessory.address);
@@ -313,7 +313,7 @@ class LegrandMyHome {
 					accessory.power = _onoff;
 					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 					accessory.bri = _onoff * 100;
-					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+					accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
 				}
 				if (accessory.address == _address && accessory.rainService !== undefined) {
 					accessory.power = _onoff;
@@ -339,7 +339,7 @@ class LegrandMyHome {
 						accessory.power = _onoff;
 					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
@@ -358,7 +358,7 @@ class LegrandMyHome {
 						accessory.power = _onoff;
 					if (accessory.matterRelay) accessory.matterRelay.sync(accessory.power);
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
@@ -377,7 +377,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.address == _address && accessory.contactSensorService !== undefined) {
 				accessory.state = _state;
-				accessory.contactSensorService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+				accessory.contactSensorService.updateCharacteristic(Characteristic.ContactSensorState, accessory.state);
 			}
 		}.bind(this));
 	}
@@ -386,7 +386,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.scenarioService !== undefined && accessory.address == _address) {
 				accessory.state = _state;
-				accessory.scenarioService.getCharacteristic(Characteristic.Active).emit("get", () => {});
+				accessory.scenarioService.updateCharacteristic(Characteristic.Active, accessory.state ? 1 : 0);
 			}
 		}.bind(this));
 	}
@@ -395,7 +395,7 @@ class LegrandMyHome {
 		this.devices.forEach(function (accessory) {
 			if (accessory.scenarioService !== undefined && accessory.address == _address) {
 				accessory.running = _state;
-				accessory.scenarioService.getCharacteristic(LegrandMyHome.SimpleBoolean).emit("get", () => {});
+				accessory.scenarioService.updateCharacteristic(LegrandMyHome.SimpleBoolean, Boolean(accessory.running));
 			}
 		}.bind(this));
 	}
@@ -426,30 +426,30 @@ class LegrandMyHome {
 				switch (accessory.type) {
 					case 'Contact':
 						accessory.state = _state;
-						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+						accessory.dryContactService.updateCharacteristic(Characteristic.ContactSensorState, accessory.state);
 						break;
 					case 'Leak':
-						accessory.state = _state; accessory.dryContactService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
+						accessory.state = _state; accessory.dryContactService.updateCharacteristic(Characteristic.LeakDetected, accessory.state);
 						break;
 					case 'Motion':
 						if (_state == true) {
 							accessory.state = true;
-							accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
+							accessory.dryContactService.updateCharacteristic(Characteristic.MotionDetected, accessory.state);
 							clearTimeout(accessory.durationhandle);
 							accessory.durationhandle = setTimeout(function () {
 								accessory.state = false;
-								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
+								accessory.dryContactService.updateCharacteristic(Characteristic.MotionDetected, accessory.state);
 							}.bind(this), accessory.duration * 1000);
 						}
 						else
 							if (accessory.firstGet == true) {
 								accessory.state = _state;
-								accessory.dryContactService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
+								accessory.dryContactService.updateCharacteristic(Characteristic.MotionDetected, accessory.state);
 							}
 						break;
 					default:
 						accessory.state = _state;
-						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+						accessory.dryContactService.updateCharacteristic(Characteristic.ContactSensorState, accessory.state);
 						break;
 				}
 			}
@@ -461,15 +461,15 @@ class LegrandMyHome {
 			if (accessory.address == _address && accessory.AUXService !== undefined) {
 				accessory.state = _state;
 				switch (accessory.type) {
-					case 'Contact': accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+					case 'Contact': accessory.AUXService.updateCharacteristic(Characteristic.ContactSensorState, accessory.state);
 						break;
-					case 'Leak': accessory.AUXService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
+					case 'Leak': accessory.AUXService.updateCharacteristic(Characteristic.LeakDetected, accessory.state);
 						break;
-					case 'Motion': accessory.AUXService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
+					case 'Motion': accessory.AUXService.updateCharacteristic(Characteristic.MotionDetected, accessory.state);
 						break;
-					case 'Gas': accessory.AUXService.getCharacteristic(Characteristic.CarbonMonoxideDetected).emit("get", () => {});
+					case 'Gas': accessory.AUXService.updateCharacteristic(Characteristic.CarbonMonoxideDetected, accessory.state);
 						break;
-					default: accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+					default: accessory.AUXService.updateCharacteristic(Characteristic.ContactSensorState, accessory.state);
 						break;
 				}
 			}
@@ -486,8 +486,8 @@ class LegrandMyHome {
 				if (accessory.address == _address && accessory.lightBulbService !== undefined) {
 					accessory.power = (_level > 0) ? 1 : 0;
 					accessory.bri = _level;
-					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
-					accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
+					accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
+					accessory.lightBulbService.updateCharacteristic(Characteristic.Brightness, accessory.bri);
 				}
 			}.bind(this));
 		else
@@ -496,8 +496,8 @@ class LegrandMyHome {
 					if (accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = (_level > 0) ? 1 : 0;
 						accessory.bri = _level;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
-						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
+						accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
+						accessory.lightBulbService.updateCharacteristic(Characteristic.Brightness, accessory.bri);
 					}
 				}.bind(this));
 			else
@@ -505,8 +505,8 @@ class LegrandMyHome {
 					if (accessory.ambient == a && accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = (_level > 0) ? 1 : 0;
 						accessory.bri = _level;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
-						accessory.lightBulbService.getCharacteristic(Characteristic.Brightness).emit("get", () => {});
+						accessory.lightBulbService.updateCharacteristic(Characteristic.On, Boolean(accessory.power));
+						accessory.lightBulbService.updateCharacteristic(Characteristic.Brightness, accessory.bri);
 					}
 				}.bind(this));
 	}
@@ -895,6 +895,11 @@ class MHRelay {
 		// can overlap the active HAP request; only bridge Matter commands into HAP.
 		if (fromMatter && this.lightBulbService) this.lightBulbService.updateCharacteristic(Characteristic.On, this.power);
 		if (this.matterRelay && !fromMatter) this.matterRelay.sync(this.power);
+		// Confirm the physical state through OpenWebNet for both HomeKit and Matter.
+		const confirmation = setTimeout(() => {
+			if (typeof this.mh.getRelayState === 'function') this.mh.getRelayState(this.address);
+		}, 400);
+		confirmation.unref?.();
 	}
 
 	getServices() {

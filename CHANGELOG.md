@@ -1,5 +1,14 @@
 # Alterações
 
+## 1.1.0-beta.9 — retorno HomeKit e interface
+
+- Respostas às consultas OpenWebNet na conexão de comandos agora são processadas em vez de descartadas.
+- Relés consultam o estado físico depois de comandos HomeKit ou Matter e publicam eventos diretamente no HAP.
+- Estado inicial de todos os relés é consultado ao conectar, incluindo acessórios sem pulso.
+- Contatos, contatos secos, AUX, cenários e dimmers publicam mudanças diretamente no HomeKit.
+- Removida a janela de reinício do configurador; o salvamento voltou a orientar o reinício pelo painel.
+- Botões, campos e cartões receberam cantos mais arredondados.
+
 ## 1.1.0-beta.8 — confirmação de reinício e sincronização
 
 - Depois de salvar, o configurador oferece `Reiniciar agora` ou `Depois` na própria janela.

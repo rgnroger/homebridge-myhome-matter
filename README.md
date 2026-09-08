@@ -1,6 +1,6 @@
 # MyHome — instalação limpa
 
-Versão **1.1.0-beta.8**, fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myhome-hb2). Cadastre os dados do novo local; não precisa de backup, IP, senha ou pareamento da residência.
+Versão **1.1.0-beta.9**, fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myhome-hb2). Cadastre os dados do novo local; não precisa de backup, IP, senha ou pareamento da residência.
 
 ## Requisitos
 
@@ -17,22 +17,22 @@ Versão **1.1.0-beta.8**, fork de [miobio/homebridge-myhome-hb2](https://github.
 
 ```sh
 cd /homebridge
-npm install homebridge-myhome-matter@1.1.0-beta.8
+npm install homebridge-myhome-matter@1.1.0-beta.9
 ```
 
 **Linux/macOS com plugins globais, fora de Docker:** use o mesmo Node/npm do serviço:
 
 ```sh
-npm install -g homebridge-myhome-matter@1.1.0-beta.8
+npm install -g homebridge-myhome-matter@1.1.0-beta.9
 ```
 
 Use `sudo` apenas se essa instalação global exigir permissão. Instalações com diretório personalizado devem usar seu próprio diretório de plugins. Não mantenha original e fork em dois diretórios simultaneamente.
 
-Também é possível transferir o pacote `homebridge-myhome-matter-1.1.0-beta.8.tgz` e instalar com `npm install ./homebridge-myhome-matter-1.1.0-beta.8.tgz` no diretório de plugins, ou `npm install -g /caminho/arquivo.tgz` para plugins globais. As dependências exigem internet.
+Também é possível transferir o pacote `homebridge-myhome-matter-1.1.0-beta.9.tgz` e instalar com `npm install ./homebridge-myhome-matter-1.1.0-beta.9.tgz` no diretório de plugins, ou `npm install -g /caminho/arquivo.tgz` para plugins globais. As dependências exigem internet.
 
 3. Reinicie o Homebridge e abra **Plugins → homebridge-myhome-matter → Configurações**.
 4. Informe IP/hostname, porta e senha do **novo gateway**. Clique em **Adicionar dispositivo** e escolha relé, dimmer ou persiana. Preencha nome, A e PL; barramento padrão 0. Área 0 é aceita e PL deve ser maior que zero. Persiana comum exige tempo real de percurso completo em segundos.
-5. Comece com um dispositivo, Matter desmarcado. Clique em **Salvar configuração** e escolha **Reiniciar agora** para aplicar.
+5. Comece com um dispositivo, Matter desmarcado. Clique em **Salvar configuração**, feche a tela e use **Reiniciar** no painel do Homebridge.
 6. Confira a conexão nos registros, pareie a nova ponte pelo código exibido pelo Homebridge e teste o dispositivo. Depois cadastre os demais.
 
 Sem gateway/dispositivos, o plugin carrega e aguarda cadastro sem abrir conexões. Abrir o editor não grava dados. O salvamento preserva outros plugins e cria um backup ao lado do arquivo de configuração.
