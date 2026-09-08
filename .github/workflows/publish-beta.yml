@@ -1,4 +1,4 @@
-name: Publish beta 8 to npm
+name: Publish beta to npm
 on: workflow_dispatch
 permissions:
   contents: read
@@ -17,6 +17,6 @@ jobs:
       - run: npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm dist-tag add homebridge-myhome-matter@1.1.0-beta.8 latest
+      - run: npm dist-tag add homebridge-myhome-matter@1.1.0-beta.9 latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
