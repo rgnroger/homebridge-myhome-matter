@@ -10,6 +10,22 @@ const original = () => [
     { platform: M.MATTER, name: 'MyHome Matter Test', address: '0/0/3', enabled: true },
 ];
 
+test('clean editor starts empty; validates new blinds and rejects duplicate companions', () => {
+    const blocks = M.load([]);
+    assert.deepEqual(blocks[0].devices, []);
+    assert.equal(blocks[0].ipaddress, '');
+    assert.throws(() => M.prepare(blocks), /gateway/);
+    blocks[0].ipaddress = '192.0.2.10';
+    assert.equal(M.prepare(blocks).length, 1);
+    blocks[0].devices.push({ accessory: 'MHBlind', name: 'Blind', address: '0/0/3' });
+    assert.throws(() => M.prepare(blocks), /tempo/);
+    blocks[0].devices[0].time = 28;
+    blocks[0].devices.push({ accessory: 'MHRelay', name: 'Light', address: '0/0/3' });
+    assert.doesNotThrow(() => M.prepare(blocks));
+    blocks.push({ platform: M.MATTER }, { platform: M.MATTER });
+    assert.throws(() => M.prepare(blocks), /somente uma/);
+});
+
 test('migrates legacy selection without mutating input or losing advanced fields', () => {
     const input = original();
     const snapshot = M.clone(input);

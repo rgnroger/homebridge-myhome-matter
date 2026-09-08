@@ -3,23 +3,67 @@
   "pluginType": "platform",
   "singular": false,
   "customUi": true,
-  "headerDisplay": "Configure os dispositivos MyHome. Área zero é aceita. Matter disponível para relés MHRelay.",
+  "headerDisplay": "Cadastre os dispositivos do novo local. Matter opcional somente para relés.",
   "schema": {
     "type": "object",
     "properties": {
-      "name": { "type": "string", "title": "Nome" },
-      "ipaddress": { "type": "string", "title": "Endereço do gateway", "required": true },
-      "port": { "type": "integer", "title": "Porta", "default": 20000 },
-      "ownpassword": { "type": "string", "title": "Senha do gateway" },
-      "setclock": { "type": "boolean", "title": "Sincronizar relógio" },
-      "devices": { "type": "array", "title": "Dispositivos", "items": {
-        "type": "object", "properties": {
-          "name": { "type": "string", "title": "Nome" },
-          "accessory": { "type": "string", "title": "Tipo" },
-          "address": { "type": "string", "title": "Endereço (barramento/área/ponto)" },
-          "matter": { "type": "boolean", "title": "Publicar também no Matter", "default": false }
-        }
-      } }
+      "name": {
+        "type": "string",
+        "title": "Nome"
+      },
+      "ipaddress": {
+        "type": "string",
+        "title": "Endereço do gateway",
+        "required": true
+      },
+      "port": {
+        "type": "integer",
+        "title": "Porta",
+        "default": 20000,
+        "minimum": 1,
+        "maximum": 65535
+      },
+      "ownpassword": {
+        "type": "string",
+        "title": "Senha do gateway",
+        "format": "password"
+      },
+      "setclock": {
+        "type": "boolean",
+        "title": "Sincronizar relógio"
+      },
+      "devices": {
+        "type": "array",
+        "title": "Dispositivos",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Nome"
+            },
+            "accessory": {
+              "type": "string",
+              "title": "Tipo"
+            },
+            "address": {
+              "type": "string",
+              "title": "Endereço (barramento/área/ponto)"
+            },
+            "matter": {
+              "type": "boolean",
+              "title": "Publicar também no Matter",
+              "default": false
+            },
+            "time": {
+              "type": "number",
+              "title": "Tempo de percurso da persiana (segundos)",
+              "minimum": 0
+            }
+          }
+        },
+        "default": []
+      }
     }
   }
 }

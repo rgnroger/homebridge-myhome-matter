@@ -28,16 +28,21 @@
     }
     function validate(blocks) {
         if (!Array.isArray(blocks)) throw new Error('Use uma lista de plataformas no JSON.');
+        if (blocks.some(p => !p || typeof p !== 'object' || Array.isArray(p))) throw new Error('Cada plataforma deve ser um objeto.');
+        if (blocks.filter(p => p.platform === MATTER).length > 1) throw new Error('Use somente uma plataforma Matter.');
         for (const p of blocks.filter(p => p.platform === HAP)) {
             if (typeof p.ipaddress !== 'string' || !p.ipaddress.trim()) throw new Error('Preencha o endereço do gateway.');
             if (p.port !== undefined && (!Number.isInteger(p.port) || p.port < 1 || p.port > 65535)) throw new Error('Porta inválida.');
             if (!Array.isArray(p.devices)) throw new Error('Dispositivos deve ser uma lista.');
             const addresses = new Set();
             for (const d of p.devices) {
-                if (!d.name || !d.accessory) throw new Error('Cada dispositivo precisa de nome e tipo.');
-                if (['MHRelay', 'MHDimmer'].includes(d.accessory)) {
+                if (!d || typeof d.name !== 'string' || !d.name.trim() || !d.accessory) throw new Error('Cada dispositivo precisa de nome e tipo.');
+                if (!['MHRelay', 'MHDimmer', 'MHBlind', 'MHBlindAdvanced', 'MHOutlet', 'MHTimedRelay', 'MHRain', 'MHThermostat', 'MHExternalThermometer', 'MHDryContact', 'MHAux', 'MHScenario', 'MHPowerMeter', 'MHAlarm', 'MHControlledLoad', 'MHIrrigation'].includes(d.accessory)) throw new Error('Tipo de dispositivo desconhecido: ' + d.accessory);
+                if (d.accessory === 'MHBlind' && (!Number.isFinite(d.time) || d.time <= 0)) throw new Error('Persiana: preencha o tempo de percurso em segundos, maior que zero.');
+                if (['MHRelay', 'MHDimmer', 'MHBlind', 'MHBlindAdvanced', 'MHOutlet', 'MHTimedRelay'].includes(d.accessory)) {
                     if (typeof d.address !== 'string' || !/^\d+\/\d+\/\d+$/.test(d.address) || Number(d.address.split('/')[2]) === 0) throw new Error('Luz: use barramento/área/ponto, por exemplo 0/0/3. O ponto deve ser maior que zero.');
-                    const normalized = d.address.split('/').map(Number).join('/');
+                    const family = ['MHBlind', 'MHBlindAdvanced'].includes(d.accessory) ? 'blind:' : 'light:';
+                    const normalized = family + d.address.split('/').map(Number).join('/');
                     if (addresses.has(normalized)) throw new Error('Há dois relés com o mesmo endereço: ' + d.address);
                     addresses.add(normalized);
                 }

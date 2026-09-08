@@ -46,7 +46,7 @@
             const kind = document.createElement('div'); kind.className = 'kind';
             const kindLabel = document.createElement('span'); kindLabel.textContent = 'Tipo';
             const typeName = document.createElement('div'); typeName.className = 'type-buttons';
-            const choices = [['MHRelay', 'Relé liga/desliga'], ['MHDimmer', 'Dimmer · HomeKit']];
+            const choices = [['MHRelay', 'Relé liga/desliga'], ['MHDimmer', 'Dimmer · HomeKit'], ['MHBlind', 'Persiana · HomeKit'], ['MHBlindAdvanced', 'Persiana avançada · HomeKit']];
             if (!choices.some(([value]) => value === d.accessory)) choices.push([d.accessory, 'Manter ' + d.accessory]);
             for (const [value, label] of choices) {
                 const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
@@ -56,7 +56,7 @@
             }
             kind.append(kindLabel, typeName); fields.append(kind);
             let advanced;
-            if (['MHRelay', 'MHDimmer'].includes(d.accessory) || /^\d+\/\d+\/\d+$/.test(d.address || '')) {
+            if (['MHRelay', 'MHDimmer', 'MHBlind', 'MHBlindAdvanced'].includes(d.accessory) || /^\d+\/\d+\/\d+$/.test(d.address || '')) {
                 // Keep the original strings (including leading zeros) until edited.
                 const parts = d.address ? d.address.split('/') : ['0', '0', ''];
                 while (parts.length < 3) parts.push('');
@@ -77,13 +77,21 @@
             } else {
                 fields.append(input('Endereço', d.address, v => { d.address = v; }));
             }
+            if (d.accessory === 'MHBlind') fields.append(input('Tempo de percurso (segundos)', d.time, value => { d.time = Number(value); }, 'number'));
             card.append(fields);
             if (advanced) card.append(advanced);
             const toggle = document.createElement('label'); toggle.className = 'matter-option';
             const check = document.createElement('input'); check.type = 'checkbox'; check.checked = d.matter === true; check.disabled = d.accessory !== 'MHRelay';
             check.onchange = () => { d.matter = check.checked; schedule(); };
             toggle.append(check, document.createTextNode('Publicar também no Matter (Alexa e outros controladores)')); card.append(toggle);
-            if (d.accessory !== 'MHRelay') { const note = document.createElement('p'); note.textContent = d.accessory === 'MHDimmer' ? 'Controle de brilho pelo HomeKit. Suporte Matter para dimmers ainda não disponível nesta versão.' : 'Dispositivo existente preservado. Opções específicas podem ser editadas na aba JSON.'; card.append(note); }
+            if (d.accessory !== 'MHRelay') {
+                const note = document.createElement('p');
+                note.textContent = d.accessory === 'MHDimmer' ? 'Controle de brilho pelo HomeKit. Matter ainda não disponível para dimmers.' :
+                    d.accessory === 'MHBlind' ? 'Controle pelo HomeKit. Informe o tempo real de percurso completo.' :
+                    d.accessory === 'MHBlindAdvanced' ? 'Controle pelo HomeKit. Requer atuador com suporte a posição avançada.' :
+                    'Opções específicas podem ser editadas na aba JSON.';
+                card.append(note);
+            }
             el('devices').append(card);
         });
         hb.fixScrollHeight();
@@ -121,8 +129,7 @@
                 if (lastError) return;
                 const saved = await hb.request('/myhome/save', { blocks: M.prepare(blocks), revision: diskRevision });
                 diskRevision = saved.revision;
-                message('Configuração salva. Reiniciando o Homebridge…');
-                await hb.request('/myhome/restart');
+                message('Configuração salva. Feche esta tela e use Reiniciar no painel do Homebridge para aplicar.');
             } catch (error) { message(error.message, true); }
             finally { buttons.forEach(button => { button.disabled = false; }); }
         }

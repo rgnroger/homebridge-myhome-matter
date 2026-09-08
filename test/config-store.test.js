@@ -5,6 +5,23 @@ const os = require('node:os');
 const path = require('node:path');
 const Store = require('../homebridge-ui/config-store');
 const M = require('../homebridge-ui/public/config-model');
+
+test('first save on a fresh Homebridge keeps its bridge identity and other plugins', t => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'myhome-clean-'));
+    t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+    const file = path.join(dir, 'config.json');
+    const bridge = { name: 'New site', username: 'AA:BB:CC:DD:EE:FF', pin: '031-45-154' };
+    fs.writeFileSync(file, JSON.stringify({ bridge, platforms: [{ platform: 'config' }] }));
+    const store = new Store(file), before = store.read();
+    const blocks = M.load(before.blocks);
+    blocks[0].ipaddress = '192.0.2.10';
+    store.save({ blocks, revision: before.revision });
+    const saved = JSON.parse(fs.readFileSync(file));
+    assert.deepEqual(saved.bridge, bridge);
+    assert.equal(saved.platforms[0].platform, 'config');
+    assert.deepEqual(saved.platforms[1].devices, []);
+    assert.equal(saved.platforms.length, 2);
+});
 test('reads both aliases and saves migration without losing unrelated configuration', t => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'myhome-'));
     t.after(() => fs.rmSync(dir, { recursive: true, force: true }));

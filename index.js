@@ -224,7 +224,7 @@ module.exports = function (homebridge) {
 	inherits(LegrandMyHome.RainSensorService, Service);
 
 	process.setMaxListeners(0);
-	homebridge.registerPlatform("homebridge-myhome", "LegrandMyHome", LegrandMyHome);
+	homebridge.registerPlatform(matterRelay.PLUGIN, "LegrandMyHome", LegrandMyHome);
 	homebridge.registerPlatform(matterRelay.PLUGIN, matterRelay.PLATFORM, matterRelay.MatterRelayPlatform);
 
 };
@@ -232,11 +232,22 @@ module.exports = function (homebridge) {
 class LegrandMyHome {
 	constructor(log, config, api) {
 		this.log = log;
-		this.config = config || {};
+		this.config = { port: 20000, devices: [], ...config };
 		this.api = api;
 		this.ready = false;
 		this.devices = [];
 		this.lightBuses = [];
+		config = this.config;
+		if (!config.ipaddress || !Array.isArray(config.devices) || !config.devices.length) {
+			this.log.info('MyHome: configure o gateway e adicione dispositivos nas configurações do plugin.');
+			return;
+		}
+		try {
+			require('./homebridge-ui/public/config-model').validate([{ ...config, platform: 'LegrandMyHome' }]);
+		} catch (error) {
+			this.log.error('MyHome: configuração inválida: ' + error.message);
+			return;
+		}
 		this.controller = new mh.MyHomeClient(config.ipaddress, config.port, config.ownpassword, config.setclock, this);
 		this.config.devices.forEach(function (accessory) {
 			this.log.info("LegrandMyHome: adds accessory");

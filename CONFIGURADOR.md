@@ -1,67 +1,53 @@
-# Configurador MyHome — 1.1.0-beta.3
+# Configurador — 1.1.0-beta.5
 
-Esta versão adiciona uma tela ao botão de configurações do plugin no Homebridge. O suporte Matter permite selecionar vários relés MHRelay existentes ou novos, incluindo a área zero. O nome npm continua `homebridge-myhome-hb2` para permitir atualizar a instalação atual sem duplicar plugins. Distribuição pelo fork rgnroger/homebridge-myhome-matter no GitHub. Não publicada no npm.
+Siga a [instalação limpa](README.md). O cadastro começa com gateway vazio e nenhum dispositivo. Informe os dados OpenWebNet do novo local: IP/hostname, porta (padrão 20000) e senha. Os endereços não são descobertos automaticamente.
 
-## Pela tela
+**A** é área, **PL** é ponto; o barramento fica em Avançado. `0/0/3` representa barramento 0, área 0, ponto 3. Para persiana comum (`MHBlind`), informe `time`, o tempo de percurso completo em segundos. Persiana avançada (`MHBlindAdvanced`) requer atuador com suporte a posição.
 
-1. Abra as configurações do plugin.
-2. Selecione o gateway e confira IP, porta e senha.
-3. Clique em **Adicionar luz** e escolha **Relé liga/desliga** ou **Dimmer**. Preencha nome, **A** (área) e **PL** (ponto de luz). Por exemplo, A = 0 e PL = 9 para um abajur. O barramento começa em 0 e pode ser alterado em Avançado.
-4. Marque **Publicar também no Matter** nos relés desejados.
-5. Clique em **Salvar configuração** e reinicie o Homebridge.
+Clique em **Salvar configuração**, feche a tela e reinicie pelo painel Homebridge. O salvamento cria backup e rejeita alterações concorrentes detectadas; se houver conflito, reabra o editor.
 
-Área zero é aceita: `0/0/3` representa barramento 0, área 0, ponto 3. O ponto deve ser maior que zero: esta etapa publica atuadores individuais, não comandos gerais. Endereços repetidos no mesmo gateway são recusados. Não alteramos o formato nem o UUID HAP de dispositivos existentes.
+## Exemplo HomeKit
 
-Desmarcar Matter mantém o relé no HomeKit. Remover uma linha exclui o dispositivo da configuração de ambos os protocolos após salvar/reiniciar. A plataforma Matter complementar é mantida mesmo sem relés selecionados para que o cache antigo seja limpo pelo Homebridge.
-
-Os outros tipos existentes continuam visíveis e conservam seus campos avançados. Nesta etapa a tela cria relés e dimmers. Dimmers controlam brilho pelo HomeKit; Matter permanece disponível somente para MHRelay. Dispositivos de outros tipos e opções específicas continuam editáveis em **JSON avançado**. Não há escolha “somente Matter”: HomeKit permanece ativo.
-
-## Pelo JSON
-
-Na plataforma original, cada relé pode ter `matter: true`:
+Adicione este objeto ao array `platforms`; não substitua o arquivo inteiro. IP reservado para documentação: substitua IP, senha, endereços e tempo antes de usar.
 
 ```json
 {
   "platform": "LegrandMyHome",
-  "name": "MyHome",
-  "ipaddress": "192.168.1.35",
+  "name": "MyHome novo local",
+  "ipaddress": "192.0.2.10",
   "port": 20000,
+  "ownpassword": "SENHA_DO_NOVO_GATEWAY",
+  "setclock": false,
   "devices": [
-    { "accessory": "MHRelay", "name": "EMBUTIDO 1", "address": "0/0/3", "matter": true },
-    { "accessory": "MHRelay", "name": "Abajur", "address": "0/0/9", "matter": true }
+    { "accessory": "MHRelay", "name": "Luz", "address": "0/0/3", "matter": false },
+    { "accessory": "MHDimmer", "name": "Dimmer", "address": "0/1/2" },
+    { "accessory": "MHBlind", "name": "Persiana", "address": "0/2/1", "time": 28 }
   ]
 }
 ```
 
-Adicione ao mesmo array `platforms` o objeto complementar (a tela cuida disso automaticamente):
+28 segundos é apenas exemplo: meça no equipamento. `setclock: false` evita ajustar o relógio do gateway ao iniciar.
+
+## Matter opcional
+
+No Homebridge 2.4+ da série 2, habilite Matter no próprio Homebridge e marque os relés na tela. Pelo JSON, use `matter: true` no `MHRelay` e acrescente ao mesmo array `platforms`:
 
 ```json
 { "platform": "LegrandMyHomeMatter", "name": "MyHome Matter", "mode": "configured", "enabled": true }
 ```
 
-Mantenha somente uma plataforma complementar. Ela e os gateways selecionados precisam estar no mesmo processo, com Matter habilitado. A tela bloqueia selecionar Matter em uma child bridge para não mover silenciosamente acessórios já pareados. Ela não altera a configuração de rede ou o pareamento Matter.
+Use apenas uma plataforma complementar. Ela e o gateway devem ficar na ponte principal, no mesmo processo. A tela não configura a rede Matter nem pareia controladores. No Homebridge 1.11, use somente HomeKit. Dimmers e persianas não têm Matter nesta versão.
 
-Configurações antigas com `address: "0/0/3"` na plataforma complementar ainda funcionam. Ao salvar pela tela, essa seleção vira `matter: true` no dispositivo correspondente. O UUID Matter continua derivado do mesmo gateway, porta e endereço, então essa migração conserva a identidade. Apenas abrir a tela não grava nem migra o arquivo ativo.
+Desmarcar Matter mantém HomeKit. A plataforma complementar permanece para limpar acessórios Matter antigos após reiniciar.
 
-## Instalação de teste no Docker já utilizado
+## Tipos legados e diagnóstico
 
-Faça backup antes. Transfira o novo arquivo `.tgz` para a pasta persistente do Homebridge pelo CasaOS. Na instalação verificada, `/var/lib/homebridge` aponta para `/homebridge`; use o caminho real para o npm não gravar uma referência relativa inválida:
+Outros tipos e opções específicas permanecem no JSON avançado. Campos avançados são preservados. Relés e persianas podem compartilhar A/PL porque usam famílias OpenWebNet distintas. Evite duplicatas da mesma família no mesmo gateway.
 
-```sh
-cd /homebridge
-npm install ./homebridge-myhome-hb2-1.1.0-beta.3.tgz --no-audit --no-fund
-```
+- Plugin ausente: confira o diretório de instalação, reinicie e procure `homebridge-myhome-hb2` nos registros.
+- Sem conexão: confira IP, porta, rede, firewall e autorização OpenWebNet.
+- Autenticação falhou: confira a senha OpenWebNet; pode diferir da senha de administração.
+- Sem acionamento: confira tipo e A/PL/barramento; teste primeiro um dispositivo.
+- Sem Matter: confira versão, Matter habilitado, relé selecionado e as plataformas no mesmo processo.
 
-Reinicie o Homebridge e abra as configurações do plugin. Não instale globalmente em paralelo. Em outra instalação, use o diretório real que já contém o `package.json` e o plugin atual.
-
-## Validação
-
-- Testes automatizados: seleção independente de vários relés, isolamento de comandos/estados, área zero, duplicatas, migração de configuração, preservação de campos avançados, retirada do cache, falha isolada de registro e encerramento.
-- Tela verificada em demonstração local com a API da interface simulada: adicionar abajur `0/0/9`, marcar Matter, salvar, conferir JSON, bloquear duplicata e remover.
-- A versão anterior `1.0.1-matter-test.1` foi validada pelo usuário com um relé físico e Alexa. Esta beta ainda precisa ser instalada para validar a integração da tela com o Homebridge real e vários atuadores reais.
-
-O cliente OpenWebNet continua otimista: enfileirar um comando não é confirmação física. Eventos do monitor atualizam o estado posterior. Dimmers e persianas ainda não são publicados em Matter.
-
-## Origem
-
-Base: miobio/homebridge-myhome-hb2 (`f512641`), preservando os avisos MIT em LICENSE. O projeto bvial/homebridge-myhome serviu como referência de experiência de configuração; nenhum código dele foi incorporado. A tela usa a API documentada em https://github.com/homebridge/plugin-ui-utils e a implementação Matter usa a API Homebridge 2.4.0.
+Testes locais não confirmam funcionamento físico no novo local.

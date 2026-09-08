@@ -1,6 +1,6 @@
 {
   "name": "homebridge-myhome-hb2",
-  "version": "1.1.0-beta.4",
+  "version": "1.1.0-beta.5",
   "description": "MyHome/OpenWebNet with visual A/PL configuration, HomeKit and opt-in Matter relays",
   "license": "MIT",
   "keywords": [
@@ -15,8 +15,8 @@
     "supports-matter"
   ],
   "engines": {
-    "node": ">=18.0.0",
-    "homebridge": ">=1.6.0"
+    "node": "^22.0.0 || ^24.0.0",
+    "homebridge": "^1.11.0 || ^2.4.0"
   },
   "author": {
     "name": "miobio"
@@ -30,18 +30,17 @@
   },
   "homepage": "https://github.com/rgnroger/homebridge-myhome-matter#readme",
   "dependencies": {
-    "debug": "^2.4.5",
-    "net": "^1.0.0",
-    "sha256": "^0.2.0",
-    "sprintf-js": "^1.0.3",
-    "moment": "^2.18.1",
+    "@homebridge/plugin-ui-utils": "2.2.6",
     "correcting-interval": "^2.0.0",
+    "debug": "^4.4.3",
     "fakegato-history": "^0.5.6",
-    "@homebridge/plugin-ui-utils": "2.2.6"
+    "moment": "^2.18.1",
+    "sha256": "^0.2.0",
+    "sprintf-js": "^1.0.3"
   },
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check index.js && node --check lib/matter-relay.js && node --check homebridge-ui/public/config-model.js && node --check homebridge-ui/public/ui.js && node --check homebridge-ui/server.js && node --check homebridge-ui/config-store.js"
+    "check": "node --check index.js && node --check lib/matter-relay.js && node --check homebridge-ui/public/config-model.js && node --check homebridge-ui/public/ui.js && node --check homebridge-ui/server.js && node --check homebridge-ui/config-store.js && node --check lib/mhclient.js"
   },
   "contributors": [
     {
@@ -58,6 +57,11 @@
     "CONFIGURADOR.md",
     "MATTER-TESTE.md",
     "sample_config.json",
-    "test/"
-  ]
+    "CHANGELOG.md"
+  ],
+  "main": "index.js",
+  "devDependencies": {
+    "homebridge": "^2.4.0",
+    "homebridge-v1": "npm:homebridge@^1.11.0"
+  }
 }
