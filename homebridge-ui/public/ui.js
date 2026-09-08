@@ -120,7 +120,7 @@
             if (rawMode) { try { applyJson(); } catch (error) { message(error.message, true); return; } }
             rawMode = false; el('visual-panel').hidden = false; el('json-panel').hidden = true; hb.fixScrollHeight();
         };
-        async function saveAndRestart() {
+        async function saveConfiguration() {
             const buttons = [...document.querySelectorAll('.save-restart')];
             buttons.forEach(button => { button.disabled = true; });
             try {
@@ -129,26 +129,11 @@
                 if (lastError) return;
                 const saved = await hb.request('/myhome/save', { blocks: M.prepare(blocks), revision: diskRevision });
                 diskRevision = saved.revision;
-                message('Configuração salva. Escolha se deseja reiniciar agora.');
-                el('restart-dialog').hidden = false;
-                el('restart-now').focus();
+                message('Configuração salva. Feche esta tela e use Reiniciar no painel do Homebridge para aplicar.');
             } catch (error) { message(error.message, true); }
             finally { buttons.forEach(button => { button.disabled = false; }); }
         }
-        el('save-restart-top').onclick = saveAndRestart;
-        el('save-restart-bottom').onclick = saveAndRestart;
-        el('restart-later').onclick = () => { el('restart-dialog').hidden = true; };
-        el('restart-now').onclick = async () => {
-            el('restart-now').disabled = true;
-            el('restart-later').disabled = true;
-            message('Reiniciando o Homebridge…');
-            try { await hb.request('/myhome/restart'); }
-            catch (error) {
-                message('Não foi possível reiniciar: ' + error.message, true);
-                el('restart-dialog').hidden = true;
-                el('restart-now').disabled = false;
-                el('restart-later').disabled = false;
-            }
-        };
+        el('save-restart-top').onclick = saveConfiguration;
+        el('save-restart-bottom').onclick = saveConfiguration;
     } catch (error) { hb.disableSaveButton(); message(error.message, true); document.querySelectorAll('.save-restart').forEach(button => { button.disabled = true; }); }
 })();
