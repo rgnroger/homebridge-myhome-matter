@@ -1,15 +1,22 @@
-name: Promote beta to latest
+name: Publish beta 8 to npm
 on: workflow_dispatch
 permissions:
   contents: read
 jobs:
-  promote:
+  publish:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      - run: npm dist-tag add homebridge-myhome-matter@1.1.0-beta.7 latest
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - run: npm publish --tag beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm dist-tag add homebridge-myhome-matter@1.1.0-beta.8 latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
