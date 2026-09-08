@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=1.1.0-beta.8">
 <main class="myhome">
   <header><span class="eyebrow">MYHOME · HOMEKIT + MATTER</span><div class="header-row"><div><h2>Seus dispositivos, do seu jeito.</h2><p>Cadastre relés, dimmers e persianas do novo local.</p></div><button id="save-restart-top" class="btn btn-success save-restart" type="button">Salvar configuração</button></div></header>
   <div id="message" role="status" aria-live="polite"></div>
@@ -17,6 +17,9 @@
   </section>
   <section id="json-panel" hidden><label for="raw">Configuração completa deste plugin</label><p>Campos avançados são preservados. Não compartilhe este JSON: ele pode conter a senha do gateway.</p><textarea id="raw" rows="20" class="form-control" spellcheck="false"></textarea><button id="apply-json" class="btn btn-outline-primary" type="button">Aplicar JSON à tela</button></section>
   <footer><span>Salve e reinicie o Homebridge para aplicar as alterações.</span><button id="save-restart-bottom" class="btn btn-success save-restart" type="button">Salvar configuração</button></footer>
+  <div id="restart-dialog" class="restart-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="restart-title">
+    <div class="restart-card"><h3 id="restart-title">Configuração salva</h3><p>Você quer reiniciar o Homebridge agora para aplicar as alterações?</p><div class="restart-actions"><button id="restart-later" class="btn btn-outline-secondary" type="button">Depois</button><button id="restart-now" class="btn btn-success" type="button">Reiniciar agora</button></div></div>
+  </div>
 </main>
-<script src="config-model.js"></script>
-<script src="ui.js"></script>
+<script src="config-model.js?v=1.1.0-beta.8"></script>
+<script src="ui.js?v=1.1.0-beta.8"></script>
