@@ -1,4 +1,4 @@
-# Configurador — 1.1.0-beta.6
+# Configurador — 1.1.0-beta.7
 
 Siga a [instalação limpa](README.md). O cadastro começa com gateway vazio e nenhum dispositivo. Informe os dados OpenWebNet do novo local: IP/hostname, porta (padrão 20000) e senha. Os endereços não são descobertos automaticamente.
 
@@ -44,7 +44,7 @@ Desmarcar Matter mantém HomeKit. A plataforma complementar permanece para limpa
 
 Outros tipos e opções específicas permanecem no JSON avançado. Campos avançados são preservados. Relés e persianas podem compartilhar A/PL porque usam famílias OpenWebNet distintas. Evite duplicatas da mesma família no mesmo gateway.
 
-- Plugin ausente: confira o diretório de instalação, reinicie e procure `homebridge-myhome-hb2` nos registros.
+- Plugin ausente: confira o diretório de instalação, reinicie e procure `homebridge-myhome-matter` nos registros.
 - Sem conexão: confira IP, porta, rede, firewall e autorização OpenWebNet.
 - Autenticação falhou: confira a senha OpenWebNet; pode diferir da senha de administração.
 - Sem acionamento: confira tipo e A/PL/barramento; teste primeiro um dispositivo.

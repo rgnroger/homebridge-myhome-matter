@@ -13,7 +13,7 @@ for (const runtime of ['homebridge', 'homebridge-v1']) test(runtime + ': real AP
     require('../index')(api);
     assert.equal(registrations.length, 2);
     // Homebridge emits alias, constructor, plugin identifier.
-    assert.ok(registrations.every(r => r.includes('homebridge-myhome-hb2')));
+    assert.ok(registrations.every(r => r.includes('homebridge-myhome-matter')));
     const registration = registrations.find(r => r.includes('LegrandMyHome'));
     const Platform = registration.find(r => typeof r === 'function');
     const messages = [];

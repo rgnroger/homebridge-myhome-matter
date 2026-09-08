@@ -1,5 +1,10 @@
 # Alterações
 
+## 1.1.0-beta.7 — publicação npm
+
+- Publicado como `homebridge-myhome-matter`, separado do pacote original.
+- Metadados de suporte HomeKit e Matter adicionados ao catálogo.
+
 ## 1.1.0-beta.6 — instalação limpa
 
 - Identificação da plataforma HomeKit corrigida de `homebridge-myhome` para o nome real do pacote, `homebridge-myhome-hb2`.

@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-myhome-hb2",
-  "version": "1.1.0-beta.6",
+  "name": "homebridge-myhome-matter",
+  "version": "1.1.0-beta.7",
   "description": "MyHome/OpenWebNet with visual A/PL configuration, HomeKit and opt-in Matter relays",
   "license": "MIT",
   "keywords": [
@@ -12,6 +12,7 @@
     "MHS1",
     "MyHOMEServer1",
     "homebridge2",
+    "supports-hap",
     "supports-matter"
   ],
   "engines": {

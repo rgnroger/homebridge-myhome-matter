@@ -1,6 +1,6 @@
 # MyHome — instalação limpa
 
-Versão **1.1.0-beta.6**, fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myhome-hb2). Cadastre os dados do novo local; não precisa de backup, IP, senha ou pareamento da residência.
+Versão **1.1.0-beta.7**, fork de [miobio/homebridge-myhome-hb2](https://github.com/miobio/homebridge-myhome-hb2). Cadastre os dados do novo local; não precisa de backup, IP, senha ou pareamento da residência.
 
 ## Requisitos
 
@@ -17,20 +17,20 @@ Versão **1.1.0-beta.6**, fork de [miobio/homebridge-myhome-hb2](https://github.
 
 ```sh
 cd /homebridge
-npm install https://github.com/rgnroger/homebridge-myhome-matter/archive/refs/tags/v1.1.0-beta.6.tar.gz
+npm install https://github.com/rgnroger/homebridge-myhome-matter/archive/refs/tags/v1.1.0-beta.7.tar.gz
 ```
 
 **Linux/macOS com plugins globais, fora de Docker:** use o mesmo Node/npm do serviço:
 
 ```sh
-npm install -g https://github.com/rgnroger/homebridge-myhome-matter/archive/refs/tags/v1.1.0-beta.6.tar.gz
+npm install -g https://github.com/rgnroger/homebridge-myhome-matter/archive/refs/tags/v1.1.0-beta.7.tar.gz
 ```
 
 Use `sudo` apenas se essa instalação global exigir permissão. Instalações com diretório personalizado devem usar seu próprio diretório de plugins. Não mantenha original e fork em dois diretórios simultaneamente.
 
-Também é possível transferir o pacote `homebridge-myhome-hb2-1.1.0-beta.6.tgz` e instalar com `npm install ./homebridge-myhome-hb2-1.1.0-beta.6.tgz` no diretório de plugins, ou `npm install -g /caminho/arquivo.tgz` para plugins globais. As dependências exigem internet.
+Também é possível transferir o pacote `homebridge-myhome-hb2-1.1.0-beta.7.tgz` e instalar com `npm install ./homebridge-myhome-hb2-1.1.0-beta.7.tgz` no diretório de plugins, ou `npm install -g /caminho/arquivo.tgz` para plugins globais. As dependências exigem internet.
 
-3. Reinicie o Homebridge e abra **Plugins → homebridge-myhome-hb2 → Configurações**.
+3. Reinicie o Homebridge e abra **Plugins → homebridge-myhome-matter → Configurações**.
 4. Informe IP/hostname, porta e senha do **novo gateway**. Clique em **Adicionar dispositivo** e escolha relé, dimmer ou persiana. Preencha nome, A e PL; barramento padrão 0. Área 0 é aceita e PL deve ser maior que zero. Persiana comum exige tempo real de percurso completo em segundos.
 5. Comece com um dispositivo, Matter desmarcado. Clique em **Salvar configuração**, feche a tela e use **Reiniciar** no painel Homebridge.
 6. Confira a conexão nos registros, pareie a nova ponte pelo código exibido pelo Homebridge e teste o dispositivo. Depois cadastre os demais.
