@@ -84,6 +84,22 @@ test('interpreta feedback agrupado das luzes 01 e 41', () => {
   ]);
 });
 
+test('interpreta posição e direção da persiana avançada', () => {
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onAdvancedBlind: (address, direction, position) => feedback.push({ address, direction, position }),
+  };
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, parent);
+
+  client.onMonitor('*#2*42*10*11*50*0*0##*#2*42*10*12*25*0*0##');
+
+  assert.deepEqual(feedback, [
+    { address: '0/4/2', direction: 'UP', position: 50 },
+    { address: '0/4/2', direction: 'DOWN', position: 25 },
+  ]);
+});
+
 test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
@@ -106,4 +122,63 @@ test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
   await waitFor(() => feedback.some((item) => item.address === '0/0/1' && item.state === true));
 
   assert.equal(gateway.states.get('01'), 1);
+});
+
+test('PLAFON MINI 41 envia um comando e recebe feedback pelo monitor', async (t) => {
+  const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
+  const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
+  const { port } = await gateway.start();
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onConnect() {},
+    onRelay: (address, state) => feedback.push({ address, state }),
+  };
+  const client = new MyHomeClient('127.0.0.1', port, '', false, parent);
+  t.after(async () => {
+    client.stop();
+    await gateway.stop();
+  });
+
+  client.start();
+  await waitFor(() => client.command.isConnected && client.monitor.isConnected);
+  client.relayCommand('0/4/1', true);
+  await waitFor(() => feedback.some((item) => item.address === '0/4/1' && item.state === true));
+
+  assert.equal(gateway.states.get('41'), 1);
+  assert.deepEqual(feedback.filter((item) => item.address === '0/4/1'), [
+    { address: '0/4/1', state: true },
+  ]);
+});
+
+test('persiana comum executa PARAR antes de SUBIR e DESCER', async (t) => {
+  const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
+  const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
+  const { port } = await gateway.start();
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onConnect() {},
+    onSimpleBlind: (address, action) => feedback.push({ address, action }),
+  };
+  const client = new MyHomeClient('127.0.0.1', port, '', false, parent);
+  t.after(async () => {
+    client.stop();
+    await gateway.stop();
+  });
+
+  client.start();
+  await waitFor(() => client.command.isConnected && client.monitor.isConnected);
+
+  client.simpleBlindCommand('0/4/2', 1);
+  await waitFor(() => gateway.blindStates.get('42') === 1);
+  client.simpleBlindCommand('0/4/2', 2);
+  await waitFor(() => gateway.blindStates.get('42') === 2);
+
+  assert.deepEqual(feedback.filter((item) => item.address === '0/4/2'), [
+    { address: '0/4/2', action: 0 },
+    { address: '0/4/2', action: 1 },
+    { address: '0/4/2', action: 0 },
+    { address: '0/4/2', action: 2 },
+  ]);
 });

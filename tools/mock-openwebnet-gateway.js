@@ -13,6 +13,7 @@ class MockOpenWebNetGateway {
     this.sockets = new Set();
     this.monitorSockets = new Set();
     this.states = new Map();
+    this.blindStates = new Map();
   }
 
   async start() {
@@ -100,6 +101,16 @@ class MockOpenWebNetGateway {
       return;
     }
 
+    const blindCommand = frame.match(/^\*2\*([012])\*([0-9#]+)##$/);
+    if (blindCommand) {
+      const action = Number(blindCommand[1]);
+      const address = blindCommand[2];
+      this.blindStates.set(address, action);
+      socket.write(ACK);
+      this.broadcast(`*2*${action}*${address}##`);
+      return;
+    }
+
     const relayStatus = frame.match(/^\*#1\*([0-9#]+)##$/);
     if (relayStatus) {
       const address = relayStatus[1];
@@ -130,6 +141,15 @@ class MockOpenWebNetGateway {
     const state = on ? 1 : 0;
     this.states.set(String(address), state);
     this.broadcast(`*1*${state}*${address}##`);
+  }
+
+  setBlind(address, action) {
+    const normalizedAction = Number(action);
+    if (![0, 1, 2].includes(normalizedAction)) {
+      throw new RangeError('A ação da persiana deve ser 0, 1 ou 2');
+    }
+    this.blindStates.set(String(address), normalizedAction);
+    this.broadcast(`*2*${normalizedAction}*${address}##`);
   }
 
   async stop() {
