@@ -237,35 +237,37 @@
       "items": [
         {
           "type": "div",
-          "displayFlex": true,
-          "flex-direction": "row",
           "items": [
             {
               "key": "lights[].name",
-              "flex": "5 1 240px",
-              "notitle": true,
+              "title": "Nome da luz",
               "placeholder": "Nome da luz"
             },
             {
-              "key": "lights[].area",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "A"
-            },
-            {
-              "key": "lights[].point",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "PL"
-            },
-            {
-              "key": "lights[].bus",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "BUS"
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "lights[].area",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ambiente (A)"
+                },
+                {
+                  "key": "lights[].point",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ponto (PL)"
+                },
+                {
+                  "key": "lights[].bus",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "BUS (B)",
+                  "description": ""
+                }
+              ]
             }
           ]
         }
@@ -281,35 +283,37 @@
       "items": [
         {
           "type": "div",
-          "displayFlex": true,
-          "flex-direction": "row",
           "items": [
             {
               "key": "dimmers[].name",
-              "flex": "5 1 240px",
-              "notitle": true,
+              "title": "Nome do dimmer",
               "placeholder": "Nome do dimmer"
             },
             {
-              "key": "dimmers[].area",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "A"
-            },
-            {
-              "key": "dimmers[].point",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "PL"
-            },
-            {
-              "key": "dimmers[].bus",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "BUS"
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "dimmers[].area",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ambiente (A)"
+                },
+                {
+                  "key": "dimmers[].point",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ponto (PL)"
+                },
+                {
+                  "key": "dimmers[].bus",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "BUS (B)",
+                  "description": ""
+                }
+              ]
             }
           ]
         }
@@ -325,47 +329,49 @@
       "items": [
         {
           "type": "div",
-          "displayFlex": true,
-          "flex-direction": "row",
           "items": [
             {
               "key": "blinds[].name",
-              "flex": "5 1 220px",
-              "notitle": true,
+              "title": "Nome da persiana",
               "placeholder": "Nome da persiana"
             },
             {
-              "key": "blinds[].area",
-              "type": "number",
-              "flex": "1 1 65px",
-              "notitle": true,
-              "placeholder": "A"
-            },
-            {
-              "key": "blinds[].point",
-              "type": "number",
-              "flex": "1 1 65px",
-              "notitle": true,
-              "placeholder": "PL"
-            },
-            {
-              "key": "blinds[].bus",
-              "type": "number",
-              "flex": "1 1 65px",
-              "notitle": true,
-              "placeholder": "BUS"
-            },
-            {
-              "key": "blinds[].travelTime",
-              "type": "number",
-              "flex": "2 1 105px",
-              "notitle": true,
-              "placeholder": "Tempo (s)"
-            },
-            {
-              "key": "blinds[].invert",
-              "flex": "2 1 105px",
-              "title": "Inverter"
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "blinds[].area",
+                  "type": "number",
+                  "flex": "1 1 95px",
+                  "title": "Ambiente (A)"
+                },
+                {
+                  "key": "blinds[].point",
+                  "type": "number",
+                  "flex": "1 1 95px",
+                  "title": "Ponto (PL)"
+                },
+                {
+                  "key": "blinds[].bus",
+                  "type": "number",
+                  "flex": "1 1 95px",
+                  "title": "BUS (B)",
+                  "description": ""
+                },
+                {
+                  "key": "blinds[].travelTime",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Tempo (s)",
+                  "description": ""
+                },
+                {
+                  "key": "blinds[].invert",
+                  "flex": "1 1 105px",
+                  "title": "Inverter"
+                }
+              ]
             }
           ]
         }
@@ -381,35 +387,37 @@
       "items": [
         {
           "type": "div",
-          "displayFlex": true,
-          "flex-direction": "row",
           "items": [
             {
               "key": "advancedBlinds[].name",
-              "flex": "5 1 240px",
-              "notitle": true,
+              "title": "Nome da persiana",
               "placeholder": "Nome da persiana"
             },
             {
-              "key": "advancedBlinds[].area",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "A"
-            },
-            {
-              "key": "advancedBlinds[].point",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "PL"
-            },
-            {
-              "key": "advancedBlinds[].bus",
-              "type": "number",
-              "flex": "1 1 75px",
-              "notitle": true,
-              "placeholder": "BUS"
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "advancedBlinds[].area",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ambiente (A)"
+                },
+                {
+                  "key": "advancedBlinds[].point",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Ponto (PL)"
+                },
+                {
+                  "key": "advancedBlinds[].bus",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "BUS (B)",
+                  "description": ""
+                }
+              ]
             }
           ]
         }

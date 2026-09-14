@@ -27,7 +27,7 @@ test('mantém os botões Adicionar em todas as seções', () => {
   }
 });
 
-test('exibe cada dispositivo em uma linha compacta', () => {
+test('exibe cada dispositivo em duas linhas compactas', () => {
   const layout = new Map(
     schema.layout
       .filter((entry) => typeof entry === 'object' && entry.key)
@@ -35,11 +35,15 @@ test('exibe cada dispositivo em uma linha compacta', () => {
   );
 
   for (const section of deviceSections) {
-    const row = layout.get(section).items[0];
-    assert.equal(row.type, 'div');
-    assert.equal(row.displayFlex, true);
-    assert.equal(row['flex-direction'], 'row');
-    assert.ok(row.items.every((field) => field.flex));
+    const device = layout.get(section).items[0];
+    const [name, addressRow] = device.items;
+    assert.equal(device.type, 'div');
+    assert.equal(name.key, `${section}[].name`);
+    assert.equal(name.flex, undefined);
+    assert.equal(addressRow.type, 'div');
+    assert.equal(addressRow.displayFlex, true);
+    assert.equal(addressRow['flex-direction'], 'row');
+    assert.ok(addressRow.items.every((field) => field.flex));
   }
 });
 
@@ -53,20 +57,19 @@ test('usa caixas numéricas compactas em vez de controles deslizantes', () => {
 
   for (const section of deviceSections) {
     const fields = new Map(
-      layout.get(section).items[0].items.map((field) => [field.key, field]),
+      layout.get(section).items[0].items[1].items.map((field) => [field.key, field]),
     );
 
     for (const field of numericFields) {
       const input = fields.get(`${section}[].${field}`);
       assert.equal(input.type, 'number');
-      assert.equal(input.notitle, true);
     }
   }
 
   const travelTime = layout
     .get('blinds')
     .items[0]
+    .items[1]
     .items.find((field) => field.key === 'blinds[].travelTime');
   assert.equal(travelTime.type, 'number');
-  assert.equal(travelTime.notitle, true);
 });
