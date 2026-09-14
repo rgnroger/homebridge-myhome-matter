@@ -235,10 +235,40 @@
       "orderable": true,
       "buttonText": "Adicionar luz",
       "items": [
-        "lights[].name",
-        "lights[].area",
-        "lights[].point",
-        "lights[].bus"
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "lights[].name",
+              "flex": "5 1 240px",
+              "notitle": true,
+              "placeholder": "Nome da luz"
+            },
+            {
+              "key": "lights[].area",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "A"
+            },
+            {
+              "key": "lights[].point",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "PL"
+            },
+            {
+              "key": "lights[].bus",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "BUS"
+            }
+          ]
+        }
       ]
     },
     {
@@ -249,10 +279,40 @@
       "orderable": true,
       "buttonText": "Adicionar dimmer",
       "items": [
-        "dimmers[].name",
-        "dimmers[].area",
-        "dimmers[].point",
-        "dimmers[].bus"
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "dimmers[].name",
+              "flex": "5 1 240px",
+              "notitle": true,
+              "placeholder": "Nome do dimmer"
+            },
+            {
+              "key": "dimmers[].area",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "A"
+            },
+            {
+              "key": "dimmers[].point",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "PL"
+            },
+            {
+              "key": "dimmers[].bus",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "BUS"
+            }
+          ]
+        }
       ]
     },
     {
@@ -263,12 +323,52 @@
       "orderable": true,
       "buttonText": "Adicionar persiana comum",
       "items": [
-        "blinds[].name",
-        "blinds[].area",
-        "blinds[].point",
-        "blinds[].bus",
-        "blinds[].travelTime",
-        "blinds[].invert"
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "blinds[].name",
+              "flex": "5 1 220px",
+              "notitle": true,
+              "placeholder": "Nome da persiana"
+            },
+            {
+              "key": "blinds[].area",
+              "type": "number",
+              "flex": "1 1 65px",
+              "notitle": true,
+              "placeholder": "A"
+            },
+            {
+              "key": "blinds[].point",
+              "type": "number",
+              "flex": "1 1 65px",
+              "notitle": true,
+              "placeholder": "PL"
+            },
+            {
+              "key": "blinds[].bus",
+              "type": "number",
+              "flex": "1 1 65px",
+              "notitle": true,
+              "placeholder": "BUS"
+            },
+            {
+              "key": "blinds[].travelTime",
+              "type": "number",
+              "flex": "2 1 105px",
+              "notitle": true,
+              "placeholder": "Tempo (s)"
+            },
+            {
+              "key": "blinds[].invert",
+              "flex": "2 1 105px",
+              "title": "Inverter"
+            }
+          ]
+        }
       ]
     },
     {
@@ -279,10 +379,40 @@
       "orderable": true,
       "buttonText": "Adicionar persiana avançada",
       "items": [
-        "advancedBlinds[].name",
-        "advancedBlinds[].area",
-        "advancedBlinds[].point",
-        "advancedBlinds[].bus"
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "advancedBlinds[].name",
+              "flex": "5 1 240px",
+              "notitle": true,
+              "placeholder": "Nome da persiana"
+            },
+            {
+              "key": "advancedBlinds[].area",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "A"
+            },
+            {
+              "key": "advancedBlinds[].point",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "PL"
+            },
+            {
+              "key": "advancedBlinds[].bus",
+              "type": "number",
+              "flex": "1 1 75px",
+              "notitle": true,
+              "placeholder": "BUS"
+            }
+          ]
+        }
       ]
     }
   ]
