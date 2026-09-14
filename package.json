@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node --check index.js && node --check lib/mhclient.js && node --check tools/mock-openwebnet-gateway.js",
+    "build": "node --check index.js && node --check lib/config.js && node --check lib/mhclient.js && node --check tools/mock-openwebnet-gateway.js",
     "test": "node --test",
     "test:watch": "node --test --watch",
     "test:gateway": "node tools/mock-openwebnet-gateway.js",

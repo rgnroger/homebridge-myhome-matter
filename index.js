@@ -1,6 +1,7 @@
 /*jshint esversion: 6,node: true,-W041: false */
 var path = require("path");
 var mh = require(path.join(__dirname, '/lib/mhclient'));
+var normalizeVisualConfig = require(path.join(__dirname, '/lib/config')).normalizeVisualConfig;
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits;
 var events = require('events'), util = require('util'), fs = require('fs');
 var Accessory, Characteristic, Service, UUIDGen;
@@ -226,56 +227,6 @@ module.exports = function (homebridge) {
 	homebridge.registerPlatform("homebridge-myhome-openwebnet", "MyHomeOpenWebNet", LegrandMyHome);
 
 };
-
-/*
- * Visual Homebridge configuration adapter.
- * The working Miobio device classes and OpenWebNet client below keep their
- * native configuration format unchanged.
- */
-function normalizeVisualConfig(input) {
-	const config = input || {};
-	if (Array.isArray(config.devices)) {
-		return config;
-	}
-
-	const address = (device) => sprintf(
-		"%d/%d/%d",
-		parseInt(device.bus || 0, 10),
-		parseInt(device.area, 10),
-		parseInt(device.point, 10),
-	);
-	const devices = [];
-
-	(config.lights || []).forEach((device) => devices.push({
-		accessory: "MHRelay",
-		name: device.name,
-		address: address(device),
-	}));
-	(config.dimmers || []).forEach((device) => devices.push({
-		accessory: "MHDimmer",
-		name: device.name,
-		address: address(device),
-	}));
-	(config.blinds || []).forEach((device) => devices.push({
-		accessory: "MHBlind",
-		name: device.name,
-		address: address(device),
-		time: Number(device.travelTime || 0),
-		invert: Boolean(device.invert),
-	}));
-	(config.advancedBlinds || []).forEach((device) => devices.push({
-		accessory: "MHBlindAdvanced",
-		name: device.name,
-		address: address(device),
-	}));
-
-	return Object.assign({}, config, {
-		ipaddress: config.host,
-		ownpassword: config.password,
-		setclock: Boolean(config.setclock),
-		devices: devices,
-	});
-}
 
 class LegrandMyHome {
 	constructor(log, config, api) {

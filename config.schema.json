@@ -69,7 +69,7 @@
               "title": "BUS (B)",
               "description": "Normalmente 0.",
               "type": "integer",
-              "default": 0,
+              "placeholder": "0",
               "minimum": 0,
               "maximum": 99,
               "required": true
@@ -112,7 +112,7 @@
               "title": "BUS (B)",
               "description": "Normalmente 0.",
               "type": "integer",
-              "default": 0,
+              "placeholder": "0",
               "minimum": 0,
               "maximum": 99,
               "required": true
@@ -155,7 +155,7 @@
               "title": "BUS (B)",
               "description": "Normalmente 0.",
               "type": "integer",
-              "default": 0,
+              "placeholder": "0",
               "minimum": 0,
               "maximum": 99,
               "required": true
@@ -164,7 +164,7 @@
               "title": "Tempo total de percurso (segundos)",
               "description": "Tempo para abrir ou fechar completamente.",
               "type": "number",
-              "default": 30,
+              "placeholder": "30",
               "minimum": 1,
               "maximum": 600,
               "required": true
@@ -172,7 +172,6 @@
             "invert": {
               "title": "Inverter subir e descer",
               "type": "boolean",
-              "default": false,
               "required": false
             }
           }
@@ -213,7 +212,7 @@
               "title": "BUS (B)",
               "description": "Normalmente 0.",
               "type": "integer",
-              "default": 0,
+              "placeholder": "0",
               "minimum": 0,
               "maximum": 99,
               "required": true
