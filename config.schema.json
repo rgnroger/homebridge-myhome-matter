@@ -225,7 +225,12 @@
   "layout": [
     "name",
     "host",
-    "port",
+    {
+      "key": "port",
+      "type": "number",
+      "title": "Porta OpenWebNet",
+      "placeholder": "20000"
+    },
     "password",
     {
       "key": "lights",

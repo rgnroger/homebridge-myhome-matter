@@ -2,6 +2,7 @@
 var path = require("path");
 var mh = require(path.join(__dirname, '/lib/mhclient'));
 var normalizeVisualConfig = require(path.join(__dirname, '/lib/config')).normalizeVisualConfig;
+var homeKitFeedback = require(path.join(__dirname, '/lib/homekit-feedback'));
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits;
 var events = require('events'), util = require('util'), fs = require('fs');
 var Accessory, Characteristic, Service, UUIDGen;
@@ -299,7 +300,7 @@ class LegrandMyHome {
 				if (accessory.address == _address && accessory.lightBulbService !== undefined) {
 					accessory.power = _onoff;
 					accessory.bri = _onoff * 100;
-					accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+					homeKitFeedback.pushValue(accessory.lightBulbService, Characteristic.On, accessory.power);
 				}
 				if (accessory.address == _address && accessory.rainService !== undefined) {
 					accessory.power = _onoff;
@@ -307,7 +308,7 @@ class LegrandMyHome {
 				}
 				if (accessory.address == _address && accessory.OutletService !== undefined) {
 					accessory.power = _onoff;
-					accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
+					homeKitFeedback.pushValue(accessory.OutletService, Characteristic.On, accessory.power);
 				}
 				if (accessory.address == _address && accessory.IrrigationService !== undefined) {
 					accessory.power = _onoff;
@@ -321,7 +322,7 @@ class LegrandMyHome {
 					if (accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						homeKitFeedback.pushValue(accessory.lightBulbService, Characteristic.On, accessory.power);
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
@@ -329,7 +330,7 @@ class LegrandMyHome {
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
-						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						homeKitFeedback.pushValue(accessory.OutletService, Characteristic.On, accessory.power);
 					}
 				}.bind(this));
 			else
@@ -337,7 +338,7 @@ class LegrandMyHome {
 					if (accessory.ambient == a && accessory.lightBulbService !== undefined && accessory.pul == false) {
 						accessory.power = _onoff;
 						accessory.bri = _onoff * 100;
-						accessory.lightBulbService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						homeKitFeedback.pushValue(accessory.lightBulbService, Characteristic.On, accessory.power);
 					}
 					if (accessory.address == _address && accessory.rainService !== undefined) {
 						accessory.power = _onoff;
@@ -345,7 +346,7 @@ class LegrandMyHome {
 					}
 					if (accessory.address == _address && accessory.OutletService !== undefined) {
 						accessory.power = _onoff;
-						accessory.OutletService.getCharacteristic(Characteristic.On).emit("get", () => {});
+						homeKitFeedback.pushValue(accessory.OutletService, Characteristic.On, accessory.power);
 					}
 				}.bind(this));
 	}
@@ -650,136 +651,22 @@ class LegrandMyHome {
 		if (address.length != 3) return "";
 		var a = parseInt(address[1]), pl = parseInt(address[2]);
 
-		if (pl != 0)
-			this.devices.forEach(function (accessory) {
-				if (accessory.address == _address && accessory.windowCoveringService !== undefined) {
-					switch (_value) {
-						case 0:
-							accessory.state = Characteristic.PositionState.STOPPED;
-							accessory.evaluatePosition();
-							clearInterval(accessory.updateTimer);
-							break;
-						case 1:
-							if (accessory.invert == false)
-								accessory.state = Characteristic.PositionState.INCREASING;
-							else
-								accessory.state = Characteristic.PositionState.DECREASING;
-							accessory.updateTimer = setInterval(function () {
-								accessory.evaluatePosition();
-								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-							}.bind(accessory), 500);		
-							break;
-						case 2:
-							if (accessory.invert == false)
-								accessory.state = Characteristic.PositionState.DECREASING;
-							else
-								accessory.state = Characteristic.PositionState.INCREASING;
-							accessory.updateTimer = setInterval(function () {
-								accessory.evaluatePosition();
-								accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-							}.bind(accessory), 500);		
-							break;
-					}
-					accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-					accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-					accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-				}
-			}.bind(this));
-		else
-			if (a == 0)
-				this.devices.forEach(function (accessory) {
-					if (accessory.windowCoveringService !== undefined && accessory.pul == false) {
-						switch (_value) {
-							case 0:
-								accessory.state = Characteristic.PositionState.STOPPED;
-								accessory.evaluatePosition();
-								clearInterval(accessory.updateTimer);
-								break;
-							case 1:
-								if (accessory.invert == false)
-									accessory.state = Characteristic.PositionState.INCREASING;
-								else
-									accessory.state = Characteristic.PositionState.DECREASING;
-								accessory.updateTimer = setInterval(function () {
-									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-								}.bind(accessory), 500);		
-								break;
-							case 2:
-								if (accessory.invert == false)
-									accessory.state = Characteristic.PositionState.DECREASING;
-								else
-									accessory.state = Characteristic.PositionState.INCREASING;
-								accessory.updateTimer = setInterval(function () {
-									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-								}.bind(accessory), 500);		
-								break;
-						}
-						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-					}
-				}.bind(this));
-			else
-				this.devices.forEach(function (accessory) {
-					if (accessory.ambient == a && accessory.windowCoveringService !== undefined && accessory.pul == false) {
-						switch (_value) {
-							case 0:
-								accessory.state = Characteristic.PositionState.STOPPED;
-								accessory.evaluatePosition();
-								clearInterval(accessory.updateTimer);
-								break;
-							case 1:
-								if (accessory.invert == false)
-									accessory.state = Characteristic.PositionState.INCREASING;
-								else
-									accessory.state = Characteristic.PositionState.DECREASING;
-								accessory.updateTimer = setInterval(function () {
-									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-								}.bind(accessory), 500);		
-								break;
-							case 2:
-								if (accessory.invert == false)
-									accessory.state = Characteristic.PositionState.DECREASING;
-								else
-									accessory.state = Characteristic.PositionState.INCREASING;
-								accessory.updateTimer = setInterval(function () {
-									accessory.evaluatePosition();
-									accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-								}.bind(accessory), 500);		
-								break;
-						}
-						accessory.windowCoveringService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-						accessory.windowCoveringService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-						accessory.windowCoveringService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-					}
-				}.bind(this));
+		this.devices.forEach(function (accessory) {
+			if (accessory.windowCoveringService === undefined) return;
+
+			var matches = pl != 0
+				? accessory.address == _address
+				: accessory.pul == false && (a == 0 || accessory.ambient == a);
+
+			if (matches)
+				homeKitFeedback.applySimpleBlindFeedback(accessory, _value, Characteristic);
+		}.bind(this));
 	}
 
 	onAdvancedBlind(_address, _action, _position) {
 		this.devices.forEach(function (accessory) {
 			if (accessory.address == _address && accessory.windowCoveringPlusService !== undefined) {
-				if (_action == "STOP") {
-					accessory.currentPosition = accessory.targetPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.CurrentPosition).emit("get", () => {});
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-					accessory.state = Characteristic.PositionState.STOPPED;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-				} else if (_action == "UP") {
-					accessory.currentPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-
-					accessory.state = Characteristic.PositionState.INCREASING;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-				} else if (_action == "DOWN") {
-					accessory.currentPosition = _position;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.TargetPosition).emit("get", () => {});
-
-					accessory.state = Characteristic.PositionState.DECREASING;
-					accessory.windowCoveringPlusService.getCharacteristic(Characteristic.PositionState).emit("get", () => {});
-				}
+				homeKitFeedback.applyAdvancedBlindFeedback(accessory, _action, _position, Characteristic);
 			}
 		}.bind(this));
 	}

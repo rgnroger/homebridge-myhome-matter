@@ -6,6 +6,13 @@ const schema = require('../config.schema.json');
 
 const deviceSections = ['lights', 'dimmers', 'blinds', 'advancedBlinds'];
 
+test('porta OpenWebNet usa caixa numérica em vez de controle deslizante', () => {
+  const port = schema.layout.find((entry) => entry && entry.key === 'port');
+  assert.equal(port.type, 'number');
+  assert.equal(port.placeholder, '20000');
+  assert.equal(schema.schema.properties.port.default, 20000);
+});
+
 test('seções de dispositivos começam vazias até clicar em Adicionar', () => {
   for (const section of deviceSections) {
     const definition = schema.schema.properties[section];
