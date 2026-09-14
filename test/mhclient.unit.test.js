@@ -1,0 +1,109 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const Module = require('node:module');
+const path = require('node:path');
+const test = require('node:test');
+
+function simpleSprintf(format, ...values) {
+  let index = 0;
+  return format.replace(/%(?:0(\d+))?([sd])/g, (_match, width, type) => {
+    const value = values[index++];
+    let output = type === 'd' ? String(Number(value)) : String(value);
+    if (width) output = output.padStart(Number(width), '0');
+    return output;
+  });
+}
+
+function loadModuleWithoutInstalledDependencies() {
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === 'debug') return () => () => {};
+    if (request === 'sprintf-js') return { sprintf: simpleSprintf };
+    if (request === 'sha256') return () => '';
+    if (request === 'moment') return () => ({ format: () => '' });
+    return originalLoad.call(this, request, parent, isMain);
+  };
+
+  try {
+    const modulePath = path.resolve(__dirname, '../lib/mhclient.js');
+    delete require.cache[modulePath];
+    return require(modulePath);
+  } finally {
+    Module._load = originalLoad;
+  }
+}
+
+const { MyHomeClient } = loadModuleWithoutInstalledDependencies();
+
+function waitFor(predicate, timeoutMs = 1500) {
+  const started = Date.now();
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (predicate()) return resolve();
+      if (Date.now() - started >= timeoutMs) {
+        return reject(new Error('Tempo esgotado aguardando condição do cliente'));
+      }
+      setTimeout(check, 10);
+    };
+    check();
+  });
+}
+
+test('converte endereços do Homebridge para OpenWebNet', () => {
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, null);
+  assert.equal(client._slashesToAddress('0/0/1'), '01');
+  assert.equal(client._slashesToAddress('0/4/1'), '41');
+  assert.equal(client._slashesToAddress('1/2/3'), '23#4#01');
+});
+
+test('gera um único comando para ligar e desligar o relé 01', () => {
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, null);
+  const sent = [];
+  client.command = { send: (frame) => sent.push(frame) };
+
+  client.relayCommand('0/0/1', true);
+  client.relayCommand('0/0/1', false);
+
+  assert.deepEqual(sent, ['*1*1*01##', '*1*0*01##']);
+});
+
+test('interpreta feedback agrupado das luzes 01 e 41', () => {
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onRelay: (address, state) => feedback.push({ address, state }),
+  };
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, parent);
+
+  client.onMonitor('*1*1*01##*1*0*41##');
+
+  assert.deepEqual(feedback, [
+    { address: '0/0/1', state: true },
+    { address: '0/4/1', state: false },
+  ]);
+});
+
+test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
+  const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
+  const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
+  const { port } = await gateway.start();
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onConnect() {},
+    onRelay: (address, state) => feedback.push({ address, state }),
+  };
+  const client = new MyHomeClient('127.0.0.1', port, '', false, parent);
+  t.after(async () => {
+    client.stop();
+    await gateway.stop();
+  });
+
+  client.start();
+  await waitFor(() => client.command.isConnected && client.monitor.isConnected);
+  client.relayCommand('0/0/1', true);
+  await waitFor(() => feedback.some((item) => item.address === '0/0/1' && item.state === true));
+
+  assert.equal(gateway.states.get('01'), 1);
+});
