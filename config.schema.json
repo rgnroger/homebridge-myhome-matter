@@ -38,7 +38,7 @@
         "title": "Luzes",
         "description": "Adicione as luzes instaladas no sistema MyHome.",
         "type": "array",
-        "default": [],
+        "minItems": 0,
         "items": {
           "type": "object",
           "title": "Luz",
@@ -81,7 +81,7 @@
         "title": "Dimmers",
         "description": "Adicione as luzes com controle de intensidade.",
         "type": "array",
-        "default": [],
+        "minItems": 0,
         "items": {
           "type": "object",
           "title": "Dimmer",
@@ -124,7 +124,7 @@
         "title": "Persianas comuns",
         "description": "Persianas sem posição absoluta, controladas pelo tempo de percurso.",
         "type": "array",
-        "default": [],
+        "minItems": 0,
         "items": {
           "type": "object",
           "title": "Persiana comum",
@@ -181,7 +181,7 @@
         "title": "Persianas avançadas",
         "description": "Persianas MyHome que informam e recebem posição absoluta de 0 a 100%.",
         "type": "array",
-        "default": [],
+        "minItems": 0,
         "items": {
           "type": "object",
           "title": "Persiana avançada",
