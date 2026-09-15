@@ -39,21 +39,21 @@ function fakeService(updates) {
   };
 }
 
-test('mantém a polaridade física observada do contato WHO 25 no HomeKit', () => {
+test('preserves the observed WHO 25 contact polarity in HomeKit', () => {
   assert.equal(contactSensorStateFromDryContact(true, false), true);
   assert.equal(contactSensorStateFromDryContact(false, false), false);
   assert.equal(contactSensorStateFromDryContact(true, true), false);
   assert.equal(contactSensorStateFromDryContact(false, true), true);
 });
 
-test('envia apenas toque curto e soltura longa do CEN+ ao HomeKit', () => {
+test('sends only CEN+ short press and long-press release to HomeKit', () => {
   assert.equal(cenPlusEventToHomeKit('SHORT_PRESS', Characteristic), 0);
   assert.equal(cenPlusEventToHomeKit('START_EXTENDED_PRESS', Characteristic), null);
   assert.equal(cenPlusEventToHomeKit('EXTENDED_PRESS', Characteristic), null);
   assert.equal(cenPlusEventToHomeKit('RELEASE_EXTENDED_PRESS', Characteristic), 2);
 });
 
-test('força eventos CEN+ repetidos para o HomeKit', () => {
+test('forces repeated CEN+ events to HomeKit', () => {
   const notifications = [];
   const service = {
     getCharacteristic() {
@@ -70,13 +70,13 @@ test('força eventos CEN+ repetidos para o HomeKit', () => {
   assert.deepEqual(notifications, [0, 0]);
 });
 
-test('envia imediatamente o feedback de luz ao HomeKit', () => {
+test('sends light feedback to HomeKit immediately', () => {
   const updates = [];
   pushValue(fakeService(updates), Characteristic.On, false);
   assert.deepEqual(updates, [{ type: 'On', value: false }]);
 });
 
-test('envia posição final da persiana avançada ao HomeKit', () => {
+test('sends the advanced blind final position to HomeKit', () => {
   const updates = [];
   const accessory = {
     windowCoveringPlusService: fakeService(updates),
@@ -97,7 +97,7 @@ test('envia posição final da persiana avançada ao HomeKit', () => {
   ]);
 });
 
-test('persiana comum informa movimento físico e não acumula temporizadores', (t) => {
+test('standard blind reports physical movement without accumulating timers', (t) => {
   const updates = [];
   const accessory = {
     windowCoveringService: fakeService(updates),
