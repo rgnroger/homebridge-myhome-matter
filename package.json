@@ -8,6 +8,7 @@
     "index.js",
     "lib",
     "config.schema.json",
+    "README.md",
     "LICENSE"
   ],
   "scripts": {
@@ -15,7 +16,7 @@
     "test": "node --test",
     "test:watch": "node --test --watch",
     "test:gateway": "node tools/mock-openwebnet-gateway.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm test && npm run build"
   },
   "keywords": [
     "homebridge-plugin",
@@ -30,8 +31,16 @@
     "openwebnet",
     "homekit"
   ],
-  "author": "",
+  "author": "rgnroger",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgnroger/homebridge-myhome-openwebnet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rgnroger/homebridge-myhome-openwebnet/issues"
+  },
+  "homepage": "https://github.com/rgnroger/homebridge-myhome-openwebnet#readme",
   "engines": {
     "node": ">=18.0.0",
     "homebridge": ">=1.6.0"
