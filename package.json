@@ -1,6 +1,6 @@
 {
   "name": "homebridge-myhome-openwebnet",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Homebridge plugin for Bticino/Legrand MyHome BUS and SCS using the proven OpenWebNet core from homebridge-myhome-hb2.",
   "main": "index.js",
   "type": "commonjs",
