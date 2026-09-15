@@ -6,14 +6,14 @@ const schema = require('../config.schema.json');
 
 const deviceSections = ['lights', 'dimmers', 'blinds', 'advancedBlinds', 'auxContacts', 'cenPlusControls'];
 
-test('porta OpenWebNet usa caixa numérica em vez de controle deslizante', () => {
+test('OpenWebNet port uses a numeric field instead of a slider', () => {
   const port = schema.layout.find((entry) => entry && entry.key === 'port');
   assert.equal(port.type, 'number');
   assert.equal(port.placeholder, '20000');
   assert.equal(schema.schema.properties.port.default, 20000);
 });
 
-test('seções de dispositivos começam vazias até clicar em Adicionar', () => {
+test('device sections start empty until Add is selected', () => {
   for (const section of deviceSections) {
     const definition = schema.schema.properties[section];
     assert.equal(definition.type, 'array');
@@ -22,7 +22,7 @@ test('seções de dispositivos começam vazias até clicar em Adicionar', () => 
   }
 });
 
-test('mantém os botões Adicionar em todas as seções', () => {
+test('keeps Add buttons in every device section', () => {
   const layout = new Map(
     schema.layout
       .filter((entry) => typeof entry === 'object' && entry.key)
@@ -30,11 +30,11 @@ test('mantém os botões Adicionar em todas as seções', () => {
   );
 
   for (const section of deviceSections) {
-    assert.match(layout.get(section).buttonText, /^Adicionar /);
+    assert.match(layout.get(section).buttonText, /^Add /);
   }
 });
 
-test('exibe cada dispositivo em duas linhas compactas', () => {
+test('displays each device in two compact rows', () => {
   const layout = new Map(
     schema.layout
       .filter((entry) => typeof entry === 'object' && entry.key)
@@ -54,7 +54,7 @@ test('exibe cada dispositivo em duas linhas compactas', () => {
   }
 });
 
-test('usa caixas numéricas compactas em vez de controles deslizantes', () => {
+test('uses compact numeric fields instead of sliders', () => {
   const numericFields = ['area', 'point', 'bus'];
   const layout = new Map(
     schema.layout
