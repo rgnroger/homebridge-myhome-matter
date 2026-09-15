@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const test = require('node:test');
 const schema = require('../config.schema.json');
 
-const deviceSections = ['lights', 'dimmers', 'blinds', 'advancedBlinds', 'auxContacts'];
+const deviceSections = ['lights', 'dimmers', 'blinds', 'advancedBlinds', 'auxContacts', 'cenPlusControls'];
 
 test('porta OpenWebNet usa caixa numérica em vez de controle deslizante', () => {
   const port = schema.layout.find((entry) => entry && entry.key === 'port');
@@ -88,4 +88,12 @@ test('usa caixas numéricas compactas em vez de controles deslizantes', () => {
   assert.equal(auxChannel.type, 'number');
   assert.equal(schema.schema.properties.auxContacts.items.properties.channel.minimum, 1);
   assert.equal(schema.schema.properties.auxContacts.items.properties.channel.maximum, 8);
+
+  const cen = layout
+    .get('cenPlusControls')
+    .items[0]
+    .items[1]
+    .items.find((field) => field.key === 'cenPlusControls[].cen');
+  assert.equal(cen.type, 'number');
+  assert.equal(schema.schema.properties.cenPlusControls.items.properties.cen.minimum, 1);
 });
