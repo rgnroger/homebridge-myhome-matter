@@ -8,6 +8,7 @@ const {
   cenPlusEventToHomeKit,
   contactSensorStateFromDryContact,
   pushValue,
+  sendEvent,
 } = require('../lib/homekit-feedback');
 
 const Characteristic = {
@@ -50,6 +51,23 @@ test('envia apenas toque curto e soltura longa do CEN+ ao HomeKit', () => {
   assert.equal(cenPlusEventToHomeKit('START_EXTENDED_PRESS', Characteristic), null);
   assert.equal(cenPlusEventToHomeKit('EXTENDED_PRESS', Characteristic), null);
   assert.equal(cenPlusEventToHomeKit('RELEASE_EXTENDED_PRESS', Characteristic), 2);
+});
+
+test('força eventos CEN+ repetidos para o HomeKit', () => {
+  const notifications = [];
+  const service = {
+    getCharacteristic() {
+      return {
+        sendEventNotification(value) {
+          notifications.push(value);
+        },
+      };
+    },
+  };
+
+  sendEvent(service, 'ProgrammableSwitchEvent', 0);
+  sendEvent(service, 'ProgrammableSwitchEvent', 0);
+  assert.deepEqual(notifications, [0, 0]);
 });
 
 test('envia imediatamente o feedback de luz ao HomeKit', () => {
