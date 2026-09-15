@@ -38,7 +38,7 @@ function connectFrames(port) {
       const timer = setTimeout(() => {
         const position = waiters.indexOf(waiter);
         if (position >= 0) waiters.splice(position, 1);
-        reject(new Error('Tempo esgotado aguardando frame OpenWebNet'));
+        reject(new Error('Timed out waiting for an OpenWebNet frame'));
       }, timeoutMs);
       waiter.resolve = (frame) => {
         clearTimeout(timer);
@@ -50,7 +50,7 @@ function connectFrames(port) {
   return { socket, nextFrame };
 }
 
-test('simula sessões COMMAND e MONITOR com feedback de relé', async (t) => {
+test('simulates COMMAND and MONITOR sessions with relay feedback', async (t) => {
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
   const { port } = await gateway.start();
   t.after(() => gateway.stop());
@@ -74,7 +74,7 @@ test('simula sessões COMMAND e MONITOR com feedback de relé', async (t) => {
   assert.equal(gateway.states.get('01'), 1);
 });
 
-test('aceita frames fragmentados como uma conexão TCP real', async (t) => {
+test('accepts fragmented frames like a real TCP connection', async (t) => {
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
   const { port } = await gateway.start();
   t.after(() => gateway.stop());
