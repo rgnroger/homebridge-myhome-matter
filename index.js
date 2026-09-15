@@ -252,6 +252,7 @@ class LegrandMyHome {
 			if (accessory.accessory == 'MHThermostat') this.devices.push(new MHThermostat(this.log, accessory));
 			if (accessory.accessory == 'MHExternalThermometer') this.devices.push(new MHThermometer(this.log, accessory));
 			if (accessory.accessory == 'MHDryContact') this.devices.push(new MHDryContact(this.log, accessory));
+			if (accessory.accessory == 'MHCenPlusButton') this.devices.push(new MHCenPlusButton(this.log, accessory));
 			if (accessory.accessory == 'MHAux') this.devices.push(new MHAux(this.log, accessory));
 			if (accessory.accessory == 'MHScenario') this.devices.push(new MHScenario(this.log, accessory));
 			if (accessory.accessory == 'MHPowerMeter') this.devices.push(new MHPowerMeter(this.log, accessory));
@@ -436,11 +437,29 @@ class LegrandMyHome {
 		}.bind(this));
 	}
 
+	onCenPlus(_address, _button, _event) {
+		this.devices.forEach(function (accessory) {
+			if (accessory.cenPlusService !== undefined
+				&& accessory.address == _address
+				&& accessory.button == _button) {
+				const homeKitEvent = homeKitFeedback.cenPlusEventToHomeKit(_event, Characteristic);
+				if (homeKitEvent !== null) {
+					homeKitFeedback.pushValue(
+						accessory.cenPlusService,
+						Characteristic.ProgrammableSwitchEvent,
+						homeKitEvent
+					);
+					this.log.info(sprintf("CEN+ %s botão %s: %s", _address, _button, _event));
+				}
+			}
+		}.bind(this));
+	}
+
 	onAUX(_address, _state) {
 		this.devices.forEach(function (accessory) {
 			if (accessory.address == _address && accessory.AUXService !== undefined) {
 				/*
-				 * AUX reports 1 when a dry contact is active/closed. HomeKit's
+					 * AUX reports 1 when a dry contact is active/closed. HomeKit's
 				 * ContactSensorState uses the opposite meaning: 0 is closed and 1 is open.
 				 * Keep legacy MHAux configurations unchanged and apply this conversion only
 				 * to contacts created by the visual configurator.
@@ -1392,6 +1411,32 @@ class MHPowerMeter {
 			this.powerLoggingService = new LegrandMyHome.FakeGatoHistoryService("energy", this, { storage: 'googleDrive', path: 'homebridge' });
 
 		return [service, this.powerMeterService, this.powerLoggingService, this.outlet];
+	}
+}
+
+class MHCenPlusButton {
+	constructor(log, config) {
+		this.config = config || {};
+		this.name = config.name;
+		this.address = Number(config.address);
+		this.button = Number(config.button);
+		this.displayName = config.name;
+		this.UUID = UUIDGen.generate(sprintf("cenplus-%s-%s", this.address, this.button));
+		this.log = log;
+		this.log.info(sprintf("LegrandMyHome::MHCenPlusButton create object: CEN %s BT%s", this.address, this.button));
+	}
+
+	getServices() {
+		var service = new Service.AccessoryInformation();
+		service.setCharacteristic(Characteristic.Name, this.name)
+			.setCharacteristic(Characteristic.Manufacturer, "BTicino/Legrand")
+			.setCharacteristic(Characteristic.Model, "4680 CEN+")
+			.setCharacteristic(Characteristic.FirmwareRevision, version)
+			.setCharacteristic(Characteristic.SerialNumber, sprintf("CEN %s Button %s", this.address, this.button));
+
+		this.cenPlusService = new Service.StatelessProgrammableSwitch(this.name);
+		this.cenPlusService.getCharacteristic(Characteristic.ProgrammableSwitchEvent);
+		return [service, this.cenPlusService];
 	}
 }
 
