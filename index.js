@@ -449,7 +449,7 @@ class LegrandMyHome {
 						Characteristic.ProgrammableSwitchEvent,
 						homeKitEvent
 					);
-					this.log.info(sprintf("CEN+ %s botão %s: %s", _address, _button, _event));
+					this.log.info(sprintf("CEN+ %s button %s: %s", _address, _button, _event));
 				}
 			}
 		}.bind(this));
@@ -1424,7 +1424,7 @@ class MHCenPlusControl {
 		this.UUID = UUIDGen.generate(sprintf("cenplus-%s", this.address));
 		this.log = log;
 		this.cenPlusServices = {};
-		this.log.info(sprintf("LegrandMyHome::MHCenPlusControl create object: CEN %s com 4 botões", this.address));
+		this.log.info(sprintf("LegrandMyHome::MHCenPlusControl create object: CEN %s with 4 buttons", this.address));
 	}
 
 	getServices() {
