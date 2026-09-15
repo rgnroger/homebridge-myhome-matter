@@ -32,11 +32,11 @@ function fakeService(updates) {
   };
 }
 
-test('converte fechamento WHO 25 para o estado fechado do HomeKit', () => {
-  assert.equal(contactSensorStateFromDryContact(true, false), false);
-  assert.equal(contactSensorStateFromDryContact(false, false), true);
-  assert.equal(contactSensorStateFromDryContact(true, true), true);
-  assert.equal(contactSensorStateFromDryContact(false, true), false);
+test('mantém a polaridade física observada do contato WHO 25 no HomeKit', () => {
+  assert.equal(contactSensorStateFromDryContact(true, false), true);
+  assert.equal(contactSensorStateFromDryContact(false, false), false);
+  assert.equal(contactSensorStateFromDryContact(true, true), false);
+  assert.equal(contactSensorStateFromDryContact(false, true), true);
 });
 
 test('envia imediatamente o feedback de luz ao HomeKit', () => {
