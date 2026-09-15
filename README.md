@@ -1,157 +1,266 @@
 # homebridge-myhome-openwebnet
 
-Plugin Homebridge para instalações BTicino/Legrand MyHome BUS/SCS através do protocolo OpenWebNet.
+A Homebridge plugin for BTicino/Legrand MyHome BUS/SCS installations using the OpenWebNet protocol.
 
-> Esta é uma versão beta. Luzes, contatos secos 3477 e comandos de cenário CEN+ 4680 foram validados em uma instalação real. Consulte [Estado da validação](#estado-da-validação) antes de usar em produção.
+> This is a beta release. Lights, 3477 dry contacts, and 4680 CEN+ scenario controls have been validated on a real installation. See [Validation status](#validation-status) before using it in production.
 
-## Recursos
+## Features
 
-- Luzes e relés com comando e feedback
+- Lights and relays with commands and live feedback
 - Dimmers
-- Persianas comuns com estimativa de posição pelo tempo de percurso
-- Persianas avançadas com posição absoluta
-- Contatos secos BTicino/Legrand 3477, canais 1 a 8
-- Comandos de cenário HC/HD/HS/L/N/NT4680 configurados como CEN+
-- Toque curto e toque longo nos quatro botões do 4680
-- Interface visual de configuração no Homebridge
+- Standard blinds with travel-time position estimation
+- Advanced blinds with absolute position feedback
+- BTicino/Legrand 3477 dry contacts, channels 1 through 8
+- HC/HD/HS/L/N/NT4680 scenario controls configured as CEN+
+- Short-press and long-press events for all four 4680 buttons
+- Visual configuration through the Homebridge UI
 
-## Requisitos
+## Requirements
 
-- Node.js 18 ou superior
-- Homebridge 1.6 ou superior
-- Gateway MyHome com OpenWebNet habilitado
-- Endereço IP, porta OpenWebNet e senha do gateway
+- Node.js 18 or later
+- Homebridge 1.6 or later
+- A MyHome gateway with OpenWebNet enabled
+- The gateway IP address, OpenWebNet port, and password when required
 
-A porta OpenWebNet normalmente utilizada é a **20000**, mas deve corresponder à configuração do seu gateway.
+OpenWebNet commonly uses TCP port **20000**, but the value must match your gateway configuration.
 
-## Instalação
+## Compatible MyHome gateways
 
-Enquanto o pacote estiver em beta:
+The plugin works with IP gateways that expose the standard OpenWebNet TCP service. The upstream OpenWebNet core reports successful use with:
+
+- F453
+- F454 v1
+- MH200N
+- MH201
+- MyHOMEServer1 with firmware 2.x
+
+These OpenWebNet-capable models are also expected to work, but have not yet been physically validated with this fork:
+
+- F453AV
+- MH202
+
+Gateway firmware and authentication settings may affect compatibility. Recent gateways may use HMAC authentication, while older installations may require enabling OpenWebNet access for the Homebridge host IP address.
+
+## Installation
+
+Install the beta release:
 
 ```bash
 npm install -g homebridge-myhome-openwebnet@beta
 ```
 
-Depois da instalação, reinicie o Homebridge.
+Restart Homebridge after installation.
 
-Também é possível instalar pela interface do Homebridge quando o pacote estiver disponível na pesquisa de plugins.
+The plugin can also be installed from the Homebridge UI when it becomes available in plugin search results.
 
-## Configuração
+## Visual configuration
 
-Abra a interface do Homebridge, localize **MyHome OpenWebNet** e selecione **Configurações**.
+Open the Homebridge UI, locate **MyHome OpenWebNet**, and select **Settings**. Enter the gateway settings first:
 
-Informe:
+| UI field | What to enter | Example |
+| --- | --- | --- |
+| Plugin name | Name shown by Homebridge | MyHome OpenWebNet |
+| MyHome gateway IP | Local IP address of the web server | 192.168.1.10 |
+| OpenWebNet port | TCP port configured on the gateway | 20000 |
+| OpenWebNet password | Gateway password, when enabled | YOUR_PASSWORD |
 
-- **IP do gateway MyHome**
-- **Porta OpenWebNet**
-- **Senha OpenWebNet**, caso configurada
-- Os dispositivos que deseja adicionar
+Device lists start empty. Select the appropriate **Add** button and complete the fields described below.
 
-As listas começam vazias. Use o botão **Adicionar** da seção correspondente.
+### Lights
 
-### Endereços de iluminação e persianas
+Select **Add light** for every standard on/off light or relay.
 
-Informe separadamente:
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Light name | Name displayed in HomeKit/Home Assistant | Living room light |
+| Area (A) | MyHome environment address | 1 |
+| Point (PL) | MyHome light-point address | 1 |
+| BUS (B) | Local bus number, normally 0 | 0 |
 
-- **Ambiente (A)**
-- **Ponto (PL)**
-- **BUS (B)** — normalmente 0
+### Dimmers
 
-O plugin converte esses campos para o endereço OpenWebNet no formato `B/A/PL`.
+Select **Add dimmer** for every light with brightness control.
 
-### Persianas comuns
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Dimmer name | Name displayed in HomeKit/Home Assistant | Dining room dimmer |
+| Area (A) | MyHome environment address | 1 |
+| Point (PL) | MyHome light-point address | 2 |
+| BUS (B) | Local bus number, normally 0 | 0 |
 
-Informe o tempo total aproximado que a persiana leva para abrir ou fechar. Como esse modelo não fornece posição absoluta, o HomeKit/Home Assistant recebe uma posição estimada com base no tempo de percurso.
+### Standard blinds
 
-Use **Inverter subir e descer** se o sentido mostrado não corresponder ao movimento físico.
+Select **Add standard blind** for a blind that does not report an absolute position.
 
-### Contatos secos 3477
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Blind name | Name displayed in HomeKit/Home Assistant | Living room blind |
+| Area (A) | MyHome environment address | 2 |
+| Point (PL) | MyHome point address | 1 |
+| BUS (B) | Local bus number, normally 0 | 0 |
+| Travel time (s) | Approximate full opening or closing time | 40 |
+| Reverse | Swaps the up and down directions | Off |
 
-No configurador MyHome, configure o módulo como **Estado do contacto**. No plugin:
+The plugin estimates the position from the configured travel time. A motor with its own end stops can use a slightly longer configured time, but the value should remain reasonably close to the real travel time for useful position feedback.
 
-1. Adicione um contato seco.
-2. Informe um nome.
-3. Selecione o canal AUX de 1 a 8.
-4. Use **Inverter aberto/fechado** apenas se o estado lógico não corresponder ao contato físico.
+### Advanced blinds
 
-### Comandos de cenário 4680 (CEN+)
+Select **Add advanced blind** for a MyHome blind actuator that reports and accepts an absolute position.
 
-No configurador MyHome, configure os módulos como **Cenário programado PLUS** e anote o **Número CEN**.
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Blind name | Name displayed in HomeKit/Home Assistant | Bedroom blind |
+| Area (A) | MyHome environment address | 2 |
+| Point (PL) | MyHome point address | 2 |
+| BUS (B) | Local bus number, normally 0 | 0 |
 
-No plugin:
+### 3477 dry contacts
 
-1. Adicione um comando CEN+.
-2. Informe o mesmo Número CEN.
-3. Defina os nomes de BT1, BT2, BT3 e BT4.
-4. Reinicie o Homebridge.
+Configure the 3477 module as **Contact status** in the MyHome configuration software. Then select **Add dry contact**.
 
-Cada botão é exposto como um comando momentâneo sem estado. São reconhecidos:
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Contact name | Name displayed in HomeKit/Home Assistant | Garage door contact |
+| AUX channel | Channel configured on the 3477, from 1 to 8 | 1 |
+| Reverse open/closed | Reverses the logical state when it does not match the physical contact | Off |
 
-- Pressionamento único
-- Pressionamento longo
+With the input wires apart, the contact should normally appear as open. Enable the reverse option only if the reported state is opposite to the physical state.
 
-No Home Assistant, esses comandos aparecem como gatilhos de automação, e não como interruptores que permanecem ligados.
+### 4680 scenario controls (CEN+)
 
-## Exemplo mínimo
+Configure each module as **Programmed Scenario PLUS** in the MyHome configuration software and note its **CEN number**. Then select **Add CEN+ control**.
+
+| Field | Meaning | Example |
+| --- | --- | --- |
+| Control name | Name of the four-button control | Garage scenarios |
+| CEN number | Same number configured in MyHomeSuite | 1 |
+| BT1 name | Name of the first button | Main light |
+| BT2 name | Name of the second button | Auxiliary light |
+| BT3 name | Name of the third button | Open blind |
+| BT4 name | Name of the fourth button | Close blind |
+
+Each button is exposed as a stateless programmable switch and reports:
+
+- Single press
+- Long press
+
+In Home Assistant, these controls are available as device automation triggers rather than switches that remain on.
+
+## Address format
+
+The visual UI asks for **Area (A)**, **Point (PL)**, and **BUS (B)** separately. The plugin converts them to the OpenWebNet `B/A/PL` format.
+
+For example:
+
+| BUS | Area | Point | OpenWebNet address |
+| --- | --- | --- | --- |
+| 0 | 1 | 4 | 0/1/4 |
+
+## Complete configuration example
+
+The following example contains one entry for every device type currently available in the visual configuration:
 
 ```json
 {
   "name": "MyHome OpenWebNet",
   "host": "192.168.1.10",
   "port": 20000,
-  "password": "SUA_SENHA",
+  "password": "YOUR_PASSWORD",
   "lights": [
     {
-      "name": "Luz da sala",
+      "name": "Living room light",
       "area": 1,
       "point": 1,
       "bus": 0
+    }
+  ],
+  "dimmers": [
+    {
+      "name": "Dining room dimmer",
+      "area": 1,
+      "point": 2,
+      "bus": 0
+    }
+  ],
+  "blinds": [
+    {
+      "name": "Living room blind",
+      "area": 2,
+      "point": 1,
+      "bus": 0,
+      "travelTime": 40,
+      "invert": false
+    }
+  ],
+  "advancedBlinds": [
+    {
+      "name": "Bedroom blind",
+      "area": 2,
+      "point": 2,
+      "bus": 0
+    }
+  ],
+  "auxContacts": [
+    {
+      "name": "Garage door contact",
+      "channel": 1,
+      "invert": false
+    }
+  ],
+  "cenPlusControls": [
+    {
+      "name": "Garage scenarios",
+      "cen": 1,
+      "button1": "Main light",
+      "button2": "Auxiliary light",
+      "button3": "Open blind",
+      "button4": "Close blind"
     }
   ],
   "platform": "MyHomeOpenWebNet"
 }
 ```
 
-Substitua os valores de exemplo pelos dados da sua instalação. Evite publicar seu arquivo de configuração real.
+Replace all example values with the values from your installation. Never publish your real configuration file.
 
 ## Home Assistant
 
-A ponte pode ser pareada ao Home Assistant pela integração **HomeKit Device**. Botões CEN+ são acessórios sem estado e devem ser usados como gatilhos de automação do dispositivo.
+The bridge can be paired with Home Assistant through the **HomeKit Device** integration. CEN+ buttons are stateless accessories and are available as device automation triggers.
 
-Uma ponte HomeKit só pode ficar pareada com um controlador de cada vez. Para mover a ponte entre Apple Casa e Home Assistant, primeiro remova o pareamento do controlador atual.
+A HomeKit bridge can only be paired with one controller at a time. To move it between Apple Home and Home Assistant, remove it from the current controller first.
 
-## Estado da validação
+## Validation status
 
-| Recurso | Estado |
+| Feature | Status |
 | --- | --- |
-| Luzes e relés | Validado em instalação real |
-| Feedback de luzes | Validado em instalação real |
-| Contatos secos 3477 | Validado em instalação real |
-| CEN+ 4680, BT1–BT4 | Validado em instalação real e Home Assistant |
-| Persiana comum | Comando e feedback validados no atuador; motor real ainda pendente |
-| Dimmer | Coberto por testes; validação física adicional recomendada |
-| Persiana avançada | Coberta por testes; validação física adicional recomendada |
-| Medidor de energia | Ainda não implementado/validado nesta versão |
+| Lights and relays | Validated on a real installation |
+| Light feedback | Validated on a real installation |
+| 3477 dry contacts | Validated on a real installation |
+| 4680 CEN+, BT1–BT4 | Validated on a real installation and Home Assistant |
+| Standard blind | Commands and feedback validated on an actuator; validation with a physical motor is pending |
+| Dimmer | Covered by automated tests; additional physical validation is recommended |
+| Advanced blind | Covered by automated tests; additional physical validation is recommended |
+| Energy meter | Not implemented or validated in this release |
 
-## Diagnóstico
+## Troubleshooting
 
-Para confirmar a comunicação com o gateway:
+To confirm that the gateway is reachable:
 
 ```powershell
 Test-NetConnection 192.168.1.10 -Port 20000
 ```
 
-Substitua o IP pelo endereço do seu gateway.
+Replace the example address with your gateway IP address.
 
-Se os acessórios não responderem:
+If accessories do not respond:
 
-- confirme que o gateway responde na rede;
-- confirme que a porta OpenWebNet está acessível;
-- confira a senha;
-- reinicie o Homebridge depois de alterar a configuração;
-- consulte o log do Homebridge para verificar os frames e eventos recebidos.
+- confirm that the gateway is reachable on the network;
+- confirm that the OpenWebNet port is accessible;
+- verify the password;
+- restart Homebridge after changing the configuration;
+- inspect the Homebridge log for received frames and events.
 
-## Desenvolvimento
+## Development
 
 ```bash
 npm install
@@ -160,12 +269,16 @@ npm run build
 npm pack --dry-run
 ```
 
-Os testes incluem normalização da configuração, frames OpenWebNet, gateway TCP simulado, feedback para HomeKit e eventos CEN+.
+The test suite covers configuration normalization, OpenWebNet frames, a simulated TCP gateway, HomeKit feedback, and CEN+ events.
 
-## Créditos
+## Credits
 
-O núcleo OpenWebNet deste projeto foi desenvolvido a partir do trabalho do projeto `homebridge-myhome-hb2`.
+The OpenWebNet core is based on work from `homebridge-myhome-hb2` and its predecessor projects.
 
-## Licença
+## Disclaimer
+
+This software is provided as-is, without warranty. This project is not affiliated with or supported by Legrand, BTicino, Apple, Homebridge, or the Home Assistant project.
+
+## License
 
 [MIT](LICENSE)
