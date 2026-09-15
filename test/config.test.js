@@ -14,7 +14,7 @@ test('ignora linhas vazias criadas pela interface de configuração', () => {
     assert.deepEqual(config.devices, []);
 });
 
-test('converte contatos secos 3477 em entradas AUX abertas e fechadas', () => {
+test('converte contatos secos 3477 em sensores WHO 25 abertos e fechados', () => {
     const config = normalizeVisualConfig({
         host: '192.168.0.35',
         auxContacts: [
@@ -25,8 +25,8 @@ test('converte contatos secos 3477 em entradas AUX abertas e fechadas', () => {
     });
 
     assert.deepEqual(config.devices, [
-        { accessory: 'MHAux', name: 'PORTA', address: 1, type: 'Contact', auxContact: true, invert: false },
-        { accessory: 'MHAux', name: 'PORTÃO', address: 2, type: 'Contact', auxContact: true, invert: true },
+        { accessory: 'MHDryContact', name: 'PORTA', address: 1, type: 'Contact', visualDryContact: true, invert: false },
+        { accessory: 'MHDryContact', name: 'PORTÃO', address: 2, type: 'Contact', visualDryContact: true, invert: true },
     ]);
 });
 

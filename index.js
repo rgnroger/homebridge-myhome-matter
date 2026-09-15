@@ -403,8 +403,10 @@ class LegrandMyHome {
 
 				switch (accessory.type) {
 					case 'Contact':
-						accessory.state = _state;
-						accessory.dryContactService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+						accessory.state = accessory.visualDryContact
+							? homeKitFeedback.contactSensorStateFromDryContact(_state, accessory.invert)
+							: _state;
+						homeKitFeedback.pushValue(accessory.dryContactService, Characteristic.ContactSensorState, accessory.state);
 						break;
 					case 'Leak':
 						accessory.state = _state; accessory.dryContactService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
@@ -1492,6 +1494,8 @@ class MHDryContact {
 		this.UUID = UUIDGen.generate(sprintf("drycontact-%s", config.address));
 		this.log = log;
 		this.type = config.type;
+		this.visualDryContact = config.visualDryContact === true;
+		this.invert = config.invert === true;
 		this.numberOpened = 0;
 		this.durationhandle = null;
 		this.duration = config.duration || 30;

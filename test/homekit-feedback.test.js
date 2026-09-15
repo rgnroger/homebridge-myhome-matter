@@ -5,6 +5,7 @@ const test = require('node:test');
 const {
   applyAdvancedBlindFeedback,
   applySimpleBlindFeedback,
+  contactSensorStateFromDryContact,
   pushValue,
 } = require('../lib/homekit-feedback');
 
@@ -30,6 +31,13 @@ function fakeService(updates) {
     },
   };
 }
+
+test('converte fechamento WHO 25 para o estado fechado do HomeKit', () => {
+  assert.equal(contactSensorStateFromDryContact(true, false), false);
+  assert.equal(contactSensorStateFromDryContact(false, false), true);
+  assert.equal(contactSensorStateFromDryContact(true, true), true);
+  assert.equal(contactSensorStateFromDryContact(false, true), false);
+});
 
 test('envia imediatamente o feedback de luz ao HomeKit', () => {
   const updates = [];
