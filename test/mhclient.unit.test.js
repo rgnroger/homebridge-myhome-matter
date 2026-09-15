@@ -42,7 +42,7 @@ function waitFor(predicate, timeoutMs = 1500) {
     const check = () => {
       if (predicate()) return resolve();
       if (Date.now() - started >= timeoutMs) {
-        return reject(new Error('Tempo esgotado aguardando condição do cliente'));
+        return reject(new Error('Timed out waiting for the client condition'));
       }
       setTimeout(check, 10);
     };
@@ -50,14 +50,14 @@ function waitFor(predicate, timeoutMs = 1500) {
   });
 }
 
-test('converte endereços do Homebridge para OpenWebNet', () => {
+test('converts Homebridge addresses to OpenWebNet', () => {
   const client = new MyHomeClient('127.0.0.1', 20001, '', false, null);
   assert.equal(client._slashesToAddress('0/0/1'), '01');
   assert.equal(client._slashesToAddress('0/4/1'), '41');
   assert.equal(client._slashesToAddress('1/2/3'), '23#4#01');
 });
 
-test('gera um único comando para ligar e desligar o relé 01', () => {
+test('generates one command to turn relay 01 on and off', () => {
   const client = new MyHomeClient('127.0.0.1', 20001, '', false, null);
   const sent = [];
   client.command = { send: (frame) => sent.push(frame) };
@@ -68,7 +68,7 @@ test('gera um único comando para ligar e desligar o relé 01', () => {
   assert.deepEqual(sent, ['*1*1*01##', '*1*0*01##']);
 });
 
-test('interpreta feedback agrupado das luzes 01 e 41', () => {
+test('parses grouped feedback from lights 01 and 41', () => {
   const feedback = [];
   const parent = {
     onMonitor() {},
@@ -84,7 +84,7 @@ test('interpreta feedback agrupado das luzes 01 e 41', () => {
   ]);
 });
 
-test('interpreta posição e direção da persiana avançada', () => {
+test('parses advanced blind position and direction', () => {
   const feedback = [];
   const parent = {
     onMonitor() {},
@@ -100,7 +100,7 @@ test('interpreta posição e direção da persiana avançada', () => {
   ]);
 });
 
-test('interpreta estados aberto e fechado dos canais AUX do 3477', () => {
+test('parses open and closed states from 3477 AUX channels', () => {
   const feedback = [];
   const parent = {
     onMonitor() {},
@@ -117,7 +117,7 @@ test('interpreta estados aberto e fechado dos canais AUX do 3477', () => {
   ]);
 });
 
-test('interpreta toque curto e pressão longa do 4680 CEN+', () => {
+test('parses short and long presses from the 4680 CEN+', () => {
   const feedback = [];
   const parent = {
     onMonitor() {},
@@ -136,7 +136,7 @@ test('interpreta toque curto e pressão longa do 4680 CEN+', () => {
   ]);
 });
 
-test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
+test('real client communicates with the simulated gateway', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
   const { port } = await gateway.start();
@@ -160,7 +160,7 @@ test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
   assert.equal(gateway.states.get('01'), 1);
 });
 
-test('PLAFON MINI 41 envia um comando e recebe feedback pelo monitor', async (t) => {
+test('LIGHT 41 sends a command and receives monitor feedback', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
   const { port } = await gateway.start();
@@ -187,7 +187,7 @@ test('PLAFON MINI 41 envia um comando e recebe feedback pelo monitor', async (t)
   ]);
 });
 
-test('persiana comum executa PARAR antes de SUBIR e DESCER', async (t) => {
+test('standard blind sends STOP before UP and DOWN', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
   const { port } = await gateway.start();
