@@ -5,7 +5,11 @@
   "strictValidation": false,
   "schema": {
     "type": "object",
-    "required": ["name", "host", "port"],
+    "required": [
+      "name",
+      "host",
+      "port"
+    ],
     "additionalProperties": false,
     "properties": {
       "name": {
@@ -42,7 +46,12 @@
         "items": {
           "type": "object",
           "title": "Luz",
-          "required": ["name", "area", "point", "bus"],
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -85,7 +94,12 @@
         "items": {
           "type": "object",
           "title": "Dimmer",
-          "required": ["name", "area", "point", "bus"],
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -128,7 +142,13 @@
         "items": {
           "type": "object",
           "title": "Persiana comum",
-          "required": ["name", "area", "point", "bus", "travelTime"],
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus",
+            "travelTime"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -185,7 +205,12 @@
         "items": {
           "type": "object",
           "title": "Persiana avançada",
-          "required": ["name", "area", "point", "bus"],
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -216,6 +241,42 @@
               "minimum": 0,
               "maximum": 99,
               "required": true
+            }
+          }
+        }
+      },
+      "auxContacts": {
+        "title": "Contatos secos (3477)",
+        "description": "Entradas auxiliares configuradas para informar contato aberto ou fechado.",
+        "type": "array",
+        "minItems": 0,
+        "items": {
+          "type": "object",
+          "title": "Contato seco",
+          "required": [
+            "name",
+            "channel"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "title": "Nome do contato",
+              "type": "string",
+              "placeholder": "Ex.: Porta da garagem",
+              "required": true
+            },
+            "channel": {
+              "title": "Canal AUX",
+              "description": "Canal de 1 a 8 configurado no 3477.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8,
+              "required": true
+            },
+            "invert": {
+              "title": "Inverter aberto e fechado",
+              "type": "boolean",
+              "required": false
             }
           }
         }
@@ -421,6 +482,44 @@
                   "flex": "1 1 120px",
                   "title": "BUS (B)",
                   "description": ""
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "auxContacts",
+      "type": "array",
+      "name": " ",
+      "description": "Cadastre os canais AUX do contato seco 3477.",
+      "orderable": true,
+      "buttonText": "Adicionar contato seco",
+      "items": [
+        {
+          "type": "div",
+          "items": [
+            {
+              "key": "auxContacts[].name",
+              "title": "Nome do contato",
+              "placeholder": "Nome do contato"
+            },
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "auxContacts[].channel",
+                  "type": "number",
+                  "flex": "1 1 120px",
+                  "title": "Canal AUX"
+                },
+                {
+                  "key": "auxContacts[].invert",
+                  "flex": "1 1 180px",
+                  "title": "Inverter aberto/fechado"
                 }
               ]
             }

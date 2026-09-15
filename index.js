@@ -437,17 +437,25 @@ class LegrandMyHome {
 	onAUX(_address, _state) {
 		this.devices.forEach(function (accessory) {
 			if (accessory.address == _address && accessory.AUXService !== undefined) {
-				accessory.state = _state;
+				/*
+				 * AUX reports 1 when a dry contact is active/closed. HomeKit's
+				 * ContactSensorState uses the opposite meaning: 0 is closed and 1 is open.
+				 * Keep legacy MHAux configurations unchanged and apply this conversion only
+				 * to contacts created by the visual configurator.
+				 */
+				let state = accessory.type === 'Contact' && accessory.auxContact ? !_state : _state;
+				if (accessory.invert) state = !state;
+				accessory.state = state;
 				switch (accessory.type) {
-					case 'Contact': accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+					case 'Contact': homeKitFeedback.pushValue(accessory.AUXService, Characteristic.ContactSensorState, accessory.state);
 						break;
-					case 'Leak': accessory.AUXService.getCharacteristic(Characteristic.LeakDetected).emit("get", () => {});
+					case 'Leak': homeKitFeedback.pushValue(accessory.AUXService, Characteristic.LeakDetected, accessory.state);
 						break;
-					case 'Motion': accessory.AUXService.getCharacteristic(Characteristic.MotionDetected).emit("get", () => {});
+					case 'Motion': homeKitFeedback.pushValue(accessory.AUXService, Characteristic.MotionDetected, accessory.state);
 						break;
-					case 'Gas': accessory.AUXService.getCharacteristic(Characteristic.CarbonMonoxideDetected).emit("get", () => {});
+					case 'Gas': homeKitFeedback.pushValue(accessory.AUXService, Characteristic.CarbonMonoxideDetected, accessory.state);
 						break;
-					default: accessory.AUXService.getCharacteristic(Characteristic.ContactSensorState).emit("get", () => {});
+					default: homeKitFeedback.pushValue(accessory.AUXService, Characteristic.ContactSensorState, accessory.state);
 						break;
 				}
 			}
@@ -1676,6 +1684,8 @@ class MHAux {
 		this.UUID = UUIDGen.generate(sprintf("aux-%s", config.address));
 		this.log = log;
 		this.type = config.type;
+		this.auxContact = config.auxContact === true;
+		this.invert = config.invert === true;
 
 		this.state = false;
 		this.log.info(sprintf("LegrandMyHome::MHAux create object: %s", this.address));

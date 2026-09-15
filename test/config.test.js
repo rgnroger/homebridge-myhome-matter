@@ -8,9 +8,26 @@ test('ignora linhas vazias criadas pela interface de configuração', () => {
     const config = normalizeVisualConfig({
         host: '192.168.0.23',
         advancedBlinds: [{ bus: 0 }, {}],
+        auxContacts: [{}, { name: 'Sem canal' }, { name: '', channel: 1 }],
     });
 
     assert.deepEqual(config.devices, []);
+});
+
+test('converte contatos secos 3477 em entradas AUX abertas e fechadas', () => {
+    const config = normalizeVisualConfig({
+        host: '192.168.0.35',
+        auxContacts: [
+            { name: 'PORTA', channel: 1 },
+            { name: 'PORTÃO', channel: 2, invert: true },
+            { name: 'Canal inválido', channel: 9 },
+        ],
+    });
+
+    assert.deepEqual(config.devices, [
+        { accessory: 'MHAux', name: 'PORTA', address: 1, type: 'Contact', auxContact: true, invert: false },
+        { accessory: 'MHAux', name: 'PORTÃO', address: 2, type: 'Contact', auxContact: true, invert: true },
+    ]);
 });
 
 test('mantém somente acessórios que possuem nome, área e ponto', () => {

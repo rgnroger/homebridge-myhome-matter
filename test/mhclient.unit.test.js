@@ -100,6 +100,23 @@ test('interpreta posição e direção da persiana avançada', () => {
   ]);
 });
 
+test('interpreta estados aberto e fechado dos canais AUX do 3477', () => {
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onAUX: (channel, state) => feedback.push({ channel, state }),
+  };
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, parent);
+
+  client.onMonitor('*9*1*1##*9*0*1##*9*1*8##');
+
+  assert.deepEqual(feedback, [
+    { channel: 1, state: true },
+    { channel: 1, state: false },
+    { channel: 8, state: true },
+  ]);
+});
+
 test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
@@ -173,7 +190,7 @@ test('persiana comum executa PARAR antes de SUBIR e DESCER', async (t) => {
   client.simpleBlindCommand('0/4/2', 1);
   await waitFor(() => gateway.blindStates.get('42') === 1);
   client.simpleBlindCommand('0/4/2', 2);
-  await waitFor(() => gateway.blindStates.get('42') === 2);
+  await waitFor(() => feedback.some((item) => item.address === '0/4/2' && item.action === 2));
 
   assert.deepEqual(feedback.filter((item) => item.address === '0/4/2'), [
     { address: '0/4/2', action: 0 },
