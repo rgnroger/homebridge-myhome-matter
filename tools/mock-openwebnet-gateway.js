@@ -146,7 +146,7 @@ class MockOpenWebNetGateway {
   setBlind(address, action) {
     const normalizedAction = Number(action);
     if (![0, 1, 2].includes(normalizedAction)) {
-      throw new RangeError('A ação da persiana deve ser 0, 1 ou 2');
+      throw new RangeError('Blind action must be 0, 1, or 2');
     }
     this.blindStates.set(String(address), normalizedAction);
     this.broadcast(`*2*${normalizedAction}*${address}##`);
@@ -177,11 +177,11 @@ if (require.main === module) {
 
   gateway.start()
     .then(({ host, port }) => {
-      console.log(`[mock-openwebnet] Gateway simulado em ${host}:${port}`);
-      console.log('[mock-openwebnet] Pressione Ctrl+C para encerrar.');
+      console.log(`[mock-openwebnet] Simulated gateway listening on ${host}:${port}`);
+      console.log('[mock-openwebnet] Press Ctrl+C to stop.');
     })
     .catch((error) => {
-      console.error('[mock-openwebnet] Falha ao iniciar:', error);
+      console.error('[mock-openwebnet] Failed to start:', error);
       process.exitCode = 1;
     });
 
