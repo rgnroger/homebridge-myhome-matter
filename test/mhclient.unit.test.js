@@ -117,6 +117,25 @@ test('interpreta estados aberto e fechado dos canais AUX do 3477', () => {
   ]);
 });
 
+test('interpreta toque curto e pressão longa do 4680 CEN+', () => {
+  const feedback = [];
+  const parent = {
+    onMonitor() {},
+    onCenPlus: (address, button, event) => feedback.push({ address, button, event }),
+  };
+  const client = new MyHomeClient('127.0.0.1', 20001, '', false, parent);
+
+  client.onMonitor('*25*22#1*21##*25*23#1*21##*25*23#1*21##*25*24#1*21##*25*21#1*21##');
+
+  assert.deepEqual(feedback, [
+    { address: 1, button: 1, event: 'START_EXTENDED_PRESS' },
+    { address: 1, button: 1, event: 'EXTENDED_PRESS' },
+    { address: 1, button: 1, event: 'EXTENDED_PRESS' },
+    { address: 1, button: 1, event: 'RELEASE_EXTENDED_PRESS' },
+    { address: 1, button: 1, event: 'SHORT_PRESS' },
+  ]);
+});
+
 test('cliente verdadeiro conversa com o gateway simulado', async (t) => {
   const { MockOpenWebNetGateway } = require('../tools/mock-openwebnet-gateway');
   const gateway = new MockOpenWebNetGateway({ port: 0, logger: { log() {} } });
