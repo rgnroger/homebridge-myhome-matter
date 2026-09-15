@@ -53,17 +53,12 @@ test('converts one 4680 CEN+ control into four programmable buttons', () => {
         }],
     });
 
-    assert.deepEqual(config.devices, [{
-        accessory: 'MHCenPlusControl',
-        name: 'GARAGE SCENARIOS',
-        address: 1,
-        buttons: [
-            { button: 1, name: 'ARRIVE' },
-            { button: 2, name: 'GARAGE SCENARIOS BT2' },
-            { button: 3, name: 'GARAGE SCENARIOS BT3' },
-            { button: 4, name: 'LEAVE' },
-        ],
-    }]);
+    assert.deepEqual(config.devices, [
+        { accessory: 'MHCenPlusButton', button: 1, name: 'ARRIVE', address: 1 },
+        { accessory: 'MHCenPlusButton', button: 2, name: 'GARAGE SCENARIOS BT2', address: 1 },
+        { accessory: 'MHCenPlusButton', button: 3, name: 'GARAGE SCENARIOS BT3', address: 1 },
+        { accessory: 'MHCenPlusButton', button: 4, name: 'LEAVE', address: 1 },
+    ]);
 });
 
 test('keeps only accessories that have a name, area, and point', () => {
