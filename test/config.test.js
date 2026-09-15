@@ -42,6 +42,25 @@ test('contatos visuais do 3477 dispensam o fakegato-history', () => {
     assert.match(source.slice(visualBranch, fakeGatoBranch), /return \[service, this\.dryContactService\]/);
 });
 
+test('converte um comando 4680 CEN+ nos quatro botões programáveis', () => {
+    const config = normalizeVisualConfig({
+        host: '192.168.0.35',
+        cenPlusControls: [{
+            name: 'CENÁRIO GARAGEM',
+            cen: 1,
+            button1: 'CHEGAR',
+            button4: 'SAIR',
+        }],
+    });
+
+    assert.deepEqual(config.devices, [
+        { accessory: 'MHCenPlusButton', name: 'CHEGAR', address: 1, button: 1 },
+        { accessory: 'MHCenPlusButton', name: 'CENÁRIO GARAGEM BT2', address: 1, button: 2 },
+        { accessory: 'MHCenPlusButton', name: 'CENÁRIO GARAGEM BT3', address: 1, button: 3 },
+        { accessory: 'MHCenPlusButton', name: 'SAIR', address: 1, button: 4 },
+    ]);
+});
+
 test('mantém somente acessórios que possuem nome, área e ponto', () => {
     const config = normalizeVisualConfig({
         host: '192.168.0.23',
