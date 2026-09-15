@@ -5,23 +5,27 @@
   "strictValidation": false,
   "schema": {
     "type": "object",
-    "required": ["name", "host", "port"],
+    "required": [
+      "name",
+      "host",
+      "port"
+    ],
     "additionalProperties": false,
     "properties": {
       "name": {
-        "title": "Nome do plugin",
+        "title": "Plugin name",
         "type": "string",
         "default": "MyHome OpenWebNet",
         "required": true
       },
       "host": {
-        "title": "IP do gateway MyHome",
+        "title": "MyHome gateway IP address",
         "type": "string",
-        "placeholder": "192.168.0.23",
+        "placeholder": "192.168.1.10",
         "required": true
       },
       "port": {
-        "title": "Porta OpenWebNet",
+        "title": "OpenWebNet port",
         "type": "integer",
         "default": 20000,
         "minimum": 1,
@@ -29,37 +33,42 @@
         "required": true
       },
       "password": {
-        "title": "Senha OpenWebNet",
+        "title": "OpenWebNet password",
         "type": "string",
-        "default": "12345",
+        "default": "",
         "required": false
       },
       "lights": {
-        "title": "Luzes",
-        "description": "Adicione as luzes instaladas no sistema MyHome.",
+        "title": "Lights",
+        "description": "Add the lights installed in your MyHome system.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
-          "title": "Luz",
-          "required": ["name", "area", "point", "bus"],
+          "title": "Light",
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome da luz",
+              "title": "Light name",
               "type": "string",
-              "placeholder": "Ex.: Luz da sala",
+              "placeholder": "E.g. Living room light",
               "required": true
             },
             "area": {
-              "title": "Ambiente (A)",
+              "title": "Area (A)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
               "required": true
             },
             "point": {
-              "title": "Ponto de luz (PL)",
+              "title": "Light point (PL)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
@@ -67,7 +76,7 @@
             },
             "bus": {
               "title": "BUS (B)",
-              "description": "Normalmente 0.",
+              "description": "Normally 0.",
               "type": "integer",
               "placeholder": "0",
               "minimum": 0,
@@ -79,30 +88,35 @@
       },
       "dimmers": {
         "title": "Dimmers",
-        "description": "Adicione as luzes com controle de intensidade.",
+        "description": "Add lights with brightness control.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
           "title": "Dimmer",
-          "required": ["name", "area", "point", "bus"],
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome do dimmer",
+              "title": "Dimmer name",
               "type": "string",
-              "placeholder": "Ex.: Luz da sala",
+              "placeholder": "E.g. Living room light",
               "required": true
             },
             "area": {
-              "title": "Ambiente (A)",
+              "title": "Area (A)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
               "required": true
             },
             "point": {
-              "title": "Ponto de luz (PL)",
+              "title": "Light point (PL)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
@@ -110,7 +124,7 @@
             },
             "bus": {
               "title": "BUS (B)",
-              "description": "Normalmente 0.",
+              "description": "Normally 0.",
               "type": "integer",
               "placeholder": "0",
               "minimum": 0,
@@ -121,31 +135,37 @@
         }
       },
       "blinds": {
-        "title": "Persianas comuns",
-        "description": "Persianas sem posição absoluta, controladas pelo tempo de percurso.",
+        "title": "Standard blinds",
+        "description": "Blinds without absolute position feedback, controlled using travel time.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
-          "title": "Persiana comum",
-          "required": ["name", "area", "point", "bus", "travelTime"],
+          "title": "Standard blind",
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus",
+            "travelTime"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome da persiana",
+              "title": "Blind name",
               "type": "string",
-              "placeholder": "Ex.: Persiana da sala",
+              "placeholder": "E.g. Living room blind",
               "required": true
             },
             "area": {
-              "title": "Ambiente (A)",
+              "title": "Area (A)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
               "required": true
             },
             "point": {
-              "title": "Ponto (PL)",
+              "title": "Point (PL)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
@@ -153,7 +173,7 @@
             },
             "bus": {
               "title": "BUS (B)",
-              "description": "Normalmente 0.",
+              "description": "Normally 0.",
               "type": "integer",
               "placeholder": "0",
               "minimum": 0,
@@ -161,8 +181,8 @@
               "required": true
             },
             "travelTime": {
-              "title": "Tempo total de percurso (segundos)",
-              "description": "Tempo para abrir ou fechar completamente.",
+              "title": "Total travel time (seconds)",
+              "description": "Time required to open or close completely.",
               "type": "number",
               "placeholder": "30",
               "minimum": 1,
@@ -170,7 +190,7 @@
               "required": true
             },
             "invert": {
-              "title": "Inverter subir e descer",
+              "title": "Reverse up and down",
               "type": "boolean",
               "required": false
             }
@@ -178,31 +198,36 @@
         }
       },
       "advancedBlinds": {
-        "title": "Persianas avançadas",
-        "description": "Persianas MyHome que informam e recebem posição absoluta de 0 a 100%.",
+        "title": "Advanced blinds",
+        "description": "MyHome blinds that report and accept an absolute position from 0 to 100%.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
-          "title": "Persiana avançada",
-          "required": ["name", "area", "point", "bus"],
+          "title": "Advanced blind",
+          "required": [
+            "name",
+            "area",
+            "point",
+            "bus"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome da persiana",
+              "title": "Blind name",
               "type": "string",
-              "placeholder": "Ex.: Persiana do quarto",
+              "placeholder": "E.g. Bedroom blind",
               "required": true
             },
             "area": {
-              "title": "Ambiente (A)",
+              "title": "Area (A)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
               "required": true
             },
             "point": {
-              "title": "Ponto (PL)",
+              "title": "Point (PL)",
               "type": "integer",
               "minimum": 0,
               "maximum": 99,
@@ -210,7 +235,7 @@
             },
             "bus": {
               "title": "BUS (B)",
-              "description": "Normalmente 0.",
+              "description": "Normally 0.",
               "type": "integer",
               "placeholder": "0",
               "minimum": 0,
@@ -221,32 +246,35 @@
         }
       },
       "auxContacts": {
-        "title": "Contatos secos (3477)",
-        "description": "Entradas auxiliares configuradas para informar contato aberto ou fechado.",
+        "title": "Dry contacts (3477)",
+        "description": "Auxiliary inputs configured to report an open or closed contact.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
-          "title": "Contato seco",
-          "required": ["name", "channel"],
+          "title": "Dry contact",
+          "required": [
+            "name",
+            "channel"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome do contato",
+              "title": "Contact name",
               "type": "string",
-              "placeholder": "Ex.: Porta da garagem",
+              "placeholder": "E.g. Garage door",
               "required": true
             },
             "channel": {
-              "title": "Canal AUX",
-              "description": "Canal de 1 a 8 configurado no 3477.",
+              "title": "AUX channel",
+              "description": "Channel 1 through 8 configured on the 3477.",
               "type": "integer",
               "minimum": 1,
               "maximum": 8,
               "required": true
             },
             "invert": {
-              "title": "Inverter aberto e fechado",
+              "title": "Reverse open and closed",
               "type": "boolean",
               "required": false
             }
@@ -254,47 +282,50 @@
         }
       },
       "cenPlusControls": {
-        "title": "Comandos de cenário 4680 (CEN+)",
-        "description": "Comandos HC/HD/HS/L/N/NT4680 configurados como Cenário programado PLUS.",
+        "title": "4680 scenario controls (CEN+)",
+        "description": "HC/HD/HS/L/N/NT4680 controls configured as Programmed Scenario PLUS.",
         "type": "array",
         "minItems": 0,
         "items": {
           "type": "object",
-          "title": "Comando de cenário CEN+",
-          "required": ["name", "cen"],
+          "title": "CEN+ scenario control",
+          "required": [
+            "name",
+            "cen"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
-              "title": "Nome do comando",
+              "title": "Control name",
               "type": "string",
-              "placeholder": "Ex.: Cenários da garagem",
+              "placeholder": "E.g. Garage scenarios",
               "required": true
             },
             "cen": {
-              "title": "Número CEN",
-              "description": "O mesmo número configurado no MyHomeSuite.",
+              "title": "CEN number",
+              "description": "The same number configured in MyHomeSuite.",
               "type": "integer",
               "minimum": 1,
               "maximum": 2047,
               "required": true
             },
             "button1": {
-              "title": "Nome do BT1",
+              "title": "BT1 name",
               "type": "string",
               "placeholder": "BT1"
             },
             "button2": {
-              "title": "Nome do BT2",
+              "title": "BT2 name",
               "type": "string",
               "placeholder": "BT2"
             },
             "button3": {
-              "title": "Nome do BT3",
+              "title": "BT3 name",
               "type": "string",
               "placeholder": "BT3"
             },
             "button4": {
-              "title": "Nome do BT4",
+              "title": "BT4 name",
               "type": "string",
               "placeholder": "BT4"
             }
@@ -309,7 +340,7 @@
     {
       "key": "port",
       "type": "number",
-      "title": "Porta OpenWebNet",
+      "title": "OpenWebNet port",
       "placeholder": "20000"
     },
     "password",
@@ -317,17 +348,17 @@
       "key": "lights",
       "type": "array",
       "name": " ",
-      "description": "Cadastre cada ponto de luz do sistema MyHome.",
+      "description": "Add each light point in the MyHome system.",
       "orderable": true,
-      "buttonText": "Adicionar luz",
+      "buttonText": "Add light",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "lights[].name",
-              "title": "Nome da luz",
-              "placeholder": "Nome da luz"
+              "title": "Light name",
+              "placeholder": "Light name"
             },
             {
               "type": "div",
@@ -338,13 +369,13 @@
                   "key": "lights[].area",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ambiente (A)"
+                  "title": "Area (A)"
                 },
                 {
                   "key": "lights[].point",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ponto (PL)"
+                  "title": "Point (PL)"
                 },
                 {
                   "key": "lights[].bus",
@@ -363,17 +394,17 @@
       "key": "dimmers",
       "type": "array",
       "name": " ",
-      "description": "Cadastre cada dimmer do sistema MyHome.",
+      "description": "Add each dimmer in the MyHome system.",
       "orderable": true,
-      "buttonText": "Adicionar dimmer",
+      "buttonText": "Add dimmer",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "dimmers[].name",
-              "title": "Nome do dimmer",
-              "placeholder": "Nome do dimmer"
+              "title": "Dimmer name",
+              "placeholder": "Dimmer name"
             },
             {
               "type": "div",
@@ -384,13 +415,13 @@
                   "key": "dimmers[].area",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ambiente (A)"
+                  "title": "Area (A)"
                 },
                 {
                   "key": "dimmers[].point",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ponto (PL)"
+                  "title": "Point (PL)"
                 },
                 {
                   "key": "dimmers[].bus",
@@ -409,17 +440,17 @@
       "key": "blinds",
       "type": "array",
       "name": " ",
-      "description": "Cadastre persianas comuns e informe o tempo total de percurso.",
+      "description": "Add standard blinds and enter their total travel time.",
       "orderable": true,
-      "buttonText": "Adicionar persiana comum",
+      "buttonText": "Add standard blind",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "blinds[].name",
-              "title": "Nome da persiana",
-              "placeholder": "Nome da persiana"
+              "title": "Blind name",
+              "placeholder": "Blind name"
             },
             {
               "type": "div",
@@ -430,13 +461,13 @@
                   "key": "blinds[].area",
                   "type": "number",
                   "flex": "1 1 95px",
-                  "title": "Ambiente (A)"
+                  "title": "Area (A)"
                 },
                 {
                   "key": "blinds[].point",
                   "type": "number",
                   "flex": "1 1 95px",
-                  "title": "Ponto (PL)"
+                  "title": "Point (PL)"
                 },
                 {
                   "key": "blinds[].bus",
@@ -449,13 +480,13 @@
                   "key": "blinds[].travelTime",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Tempo (s)",
+                  "title": "Travel time (s)",
                   "description": ""
                 },
                 {
                   "key": "blinds[].invert",
                   "flex": "1 1 105px",
-                  "title": "Inverter"
+                  "title": "Reverse"
                 }
               ]
             }
@@ -467,17 +498,17 @@
       "key": "advancedBlinds",
       "type": "array",
       "name": " ",
-      "description": "Cadastre persianas com controle e feedback de posição absoluta.",
+      "description": "Add blinds with absolute position control and feedback.",
       "orderable": true,
-      "buttonText": "Adicionar persiana avançada",
+      "buttonText": "Add advanced blind",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "advancedBlinds[].name",
-              "title": "Nome da persiana",
-              "placeholder": "Nome da persiana"
+              "title": "Blind name",
+              "placeholder": "Blind name"
             },
             {
               "type": "div",
@@ -488,13 +519,13 @@
                   "key": "advancedBlinds[].area",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ambiente (A)"
+                  "title": "Area (A)"
                 },
                 {
                   "key": "advancedBlinds[].point",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Ponto (PL)"
+                  "title": "Point (PL)"
                 },
                 {
                   "key": "advancedBlinds[].bus",
@@ -513,17 +544,17 @@
       "key": "auxContacts",
       "type": "array",
       "name": " ",
-      "description": "Cadastre os canais AUX do contato seco 3477.",
+      "description": "Add the AUX channels of the 3477 dry-contact module.",
       "orderable": true,
-      "buttonText": "Adicionar contato seco",
+      "buttonText": "Add dry contact",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "auxContacts[].name",
-              "title": "Nome do contato",
-              "placeholder": "Nome do contato"
+              "title": "Contact name",
+              "placeholder": "Contact name"
             },
             {
               "type": "div",
@@ -534,12 +565,12 @@
                   "key": "auxContacts[].channel",
                   "type": "number",
                   "flex": "1 1 120px",
-                  "title": "Canal AUX"
+                  "title": "AUX channel"
                 },
                 {
                   "key": "auxContacts[].invert",
                   "flex": "1 1 180px",
-                  "title": "Inverter aberto/fechado"
+                  "title": "Reverse open/closed"
                 }
               ]
             }
@@ -551,17 +582,17 @@
       "key": "cenPlusControls",
       "type": "array",
       "name": " ",
-      "description": "Cadastre comandos 4680 configurados como Cenário programado PLUS.",
+      "description": "Add 4680 controls configured as Programmed Scenario PLUS.",
       "orderable": true,
-      "buttonText": "Adicionar comando CEN+",
+      "buttonText": "Add CEN+ control",
       "items": [
         {
           "type": "div",
           "items": [
             {
               "key": "cenPlusControls[].name",
-              "title": "Nome do comando",
-              "placeholder": "Nome do comando 4680"
+              "title": "Control name",
+              "placeholder": "4680 control name"
             },
             {
               "type": "div",
@@ -572,27 +603,27 @@
                   "key": "cenPlusControls[].cen",
                   "type": "number",
                   "flex": "0 1 105px",
-                  "title": "Número CEN"
+                  "title": "CEN number"
                 },
                 {
                   "key": "cenPlusControls[].button1",
                   "flex": "1 1 130px",
-                  "title": "Nome BT1"
+                  "title": "BT1 name"
                 },
                 {
                   "key": "cenPlusControls[].button2",
                   "flex": "1 1 130px",
-                  "title": "Nome BT2"
+                  "title": "BT2 name"
                 },
                 {
                   "key": "cenPlusControls[].button3",
                   "flex": "1 1 130px",
-                  "title": "Nome BT3"
+                  "title": "BT3 name"
                 },
                 {
                   "key": "cenPlusControls[].button4",
                   "flex": "1 1 130px",
-                  "title": "Nome BT4"
+                  "title": "BT4 name"
                 }
               ]
             }
