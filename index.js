@@ -1435,7 +1435,13 @@ class MHCenPlusButton {
 			.setCharacteristic(Characteristic.SerialNumber, sprintf("CEN %s Button %s", this.address, this.button));
 
 		this.cenPlusService = new Service.StatelessProgrammableSwitch(this.name);
-		this.cenPlusService.getCharacteristic(Characteristic.ProgrammableSwitchEvent);
+		this.cenPlusService.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+			.setProps({
+				validValues: [
+					Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS,
+					Characteristic.ProgrammableSwitchEvent.LONG_PRESS,
+				],
+			});
 		return [service, this.cenPlusService];
 	}
 }
