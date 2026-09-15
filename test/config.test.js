@@ -53,12 +53,17 @@ test('converte um comando 4680 CEN+ nos quatro botões programáveis', () => {
         }],
     });
 
-    assert.deepEqual(config.devices, [
-        { accessory: 'MHCenPlusButton', name: 'CHEGAR', address: 1, button: 1 },
-        { accessory: 'MHCenPlusButton', name: 'CENÁRIO GARAGEM BT2', address: 1, button: 2 },
-        { accessory: 'MHCenPlusButton', name: 'CENÁRIO GARAGEM BT3', address: 1, button: 3 },
-        { accessory: 'MHCenPlusButton', name: 'SAIR', address: 1, button: 4 },
-    ]);
+    assert.deepEqual(config.devices, [{
+        accessory: 'MHCenPlusControl',
+        name: 'CENÁRIO GARAGEM',
+        address: 1,
+        buttons: [
+            { button: 1, name: 'CHEGAR' },
+            { button: 2, name: 'CENÁRIO GARAGEM BT2' },
+            { button: 3, name: 'CENÁRIO GARAGEM BT3' },
+            { button: 4, name: 'SAIR' },
+        ],
+    }]);
 });
 
 test('mantém somente acessórios que possuem nome, área e ponto', () => {
