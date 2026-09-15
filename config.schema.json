@@ -5,11 +5,7 @@
   "strictValidation": false,
   "schema": {
     "type": "object",
-    "required": [
-      "name",
-      "host",
-      "port"
-    ],
+    "required": ["name", "host", "port"],
     "additionalProperties": false,
     "properties": {
       "name": {
@@ -46,12 +42,7 @@
         "items": {
           "type": "object",
           "title": "Luz",
-          "required": [
-            "name",
-            "area",
-            "point",
-            "bus"
-          ],
+          "required": ["name", "area", "point", "bus"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -94,12 +85,7 @@
         "items": {
           "type": "object",
           "title": "Dimmer",
-          "required": [
-            "name",
-            "area",
-            "point",
-            "bus"
-          ],
+          "required": ["name", "area", "point", "bus"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -142,13 +128,7 @@
         "items": {
           "type": "object",
           "title": "Persiana comum",
-          "required": [
-            "name",
-            "area",
-            "point",
-            "bus",
-            "travelTime"
-          ],
+          "required": ["name", "area", "point", "bus", "travelTime"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -205,12 +185,7 @@
         "items": {
           "type": "object",
           "title": "Persiana avançada",
-          "required": [
-            "name",
-            "area",
-            "point",
-            "bus"
-          ],
+          "required": ["name", "area", "point", "bus"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -253,10 +228,7 @@
         "items": {
           "type": "object",
           "title": "Contato seco",
-          "required": [
-            "name",
-            "channel"
-          ],
+          "required": ["name", "channel"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -277,6 +249,54 @@
               "title": "Inverter aberto e fechado",
               "type": "boolean",
               "required": false
+            }
+          }
+        }
+      },
+      "cenPlusControls": {
+        "title": "Comandos de cenário 4680 (CEN+)",
+        "description": "Comandos HC/HD/HS/L/N/NT4680 configurados como Cenário programado PLUS.",
+        "type": "array",
+        "minItems": 0,
+        "items": {
+          "type": "object",
+          "title": "Comando de cenário CEN+",
+          "required": ["name", "cen"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "title": "Nome do comando",
+              "type": "string",
+              "placeholder": "Ex.: Cenários da garagem",
+              "required": true
+            },
+            "cen": {
+              "title": "Número CEN",
+              "description": "O mesmo número configurado no MyHomeSuite.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2047,
+              "required": true
+            },
+            "button1": {
+              "title": "Nome do BT1",
+              "type": "string",
+              "placeholder": "BT1"
+            },
+            "button2": {
+              "title": "Nome do BT2",
+              "type": "string",
+              "placeholder": "BT2"
+            },
+            "button3": {
+              "title": "Nome do BT3",
+              "type": "string",
+              "placeholder": "BT3"
+            },
+            "button4": {
+              "title": "Nome do BT4",
+              "type": "string",
+              "placeholder": "BT4"
             }
           }
         }
@@ -520,6 +540,59 @@
                   "key": "auxContacts[].invert",
                   "flex": "1 1 180px",
                   "title": "Inverter aberto/fechado"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cenPlusControls",
+      "type": "array",
+      "name": " ",
+      "description": "Cadastre comandos 4680 configurados como Cenário programado PLUS.",
+      "orderable": true,
+      "buttonText": "Adicionar comando CEN+",
+      "items": [
+        {
+          "type": "div",
+          "items": [
+            {
+              "key": "cenPlusControls[].name",
+              "title": "Nome do comando",
+              "placeholder": "Nome do comando 4680"
+            },
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "cenPlusControls[].cen",
+                  "type": "number",
+                  "flex": "0 1 105px",
+                  "title": "Número CEN"
+                },
+                {
+                  "key": "cenPlusControls[].button1",
+                  "flex": "1 1 130px",
+                  "title": "Nome BT1"
+                },
+                {
+                  "key": "cenPlusControls[].button2",
+                  "flex": "1 1 130px",
+                  "title": "Nome BT2"
+                },
+                {
+                  "key": "cenPlusControls[].button3",
+                  "flex": "1 1 130px",
+                  "title": "Nome BT3"
+                },
+                {
+                  "key": "cenPlusControls[].button4",
+                  "flex": "1 1 130px",
+                  "title": "Nome BT4"
                 }
               ]
             }
