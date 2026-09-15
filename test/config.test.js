@@ -6,33 +6,33 @@ const { normalizeVisualConfig } = require('../lib/config');
 const fs = require('node:fs');
 const path = require('node:path');
 
-test('ignora linhas vazias criadas pela interface de configuração', () => {
+test('ignores empty rows created by the configuration UI', () => {
     const config = normalizeVisualConfig({
-        host: '192.168.0.23',
+        host: '192.168.1.10',
         advancedBlinds: [{ bus: 0 }, {}],
-        auxContacts: [{}, { name: 'Sem canal' }, { name: '', channel: 1 }],
+        auxContacts: [{}, { name: 'Missing channel' }, { name: '', channel: 1 }],
     });
 
     assert.deepEqual(config.devices, []);
 });
 
-test('converte contatos secos 3477 em sensores WHO 25 abertos e fechados', () => {
+test('converts 3477 dry contacts into WHO 25 open and closed sensors', () => {
     const config = normalizeVisualConfig({
-        host: '192.168.0.35',
+        host: '192.168.1.10',
         auxContacts: [
-            { name: 'PORTA', channel: 1 },
-            { name: 'PORTÃO', channel: 2, invert: true },
-            { name: 'Canal inválido', channel: 9 },
+            { name: 'DOOR', channel: 1 },
+            { name: 'GATE', channel: 2, invert: true },
+            { name: 'Invalid channel', channel: 9 },
         ],
     });
 
     assert.deepEqual(config.devices, [
-        { accessory: 'MHDryContact', name: 'PORTA', address: 1, type: 'Contact', visualDryContact: true, invert: false },
-        { accessory: 'MHDryContact', name: 'PORTÃO', address: 2, type: 'Contact', visualDryContact: true, invert: true },
+        { accessory: 'MHDryContact', name: 'DOOR', address: 1, type: 'Contact', visualDryContact: true, invert: false },
+        { accessory: 'MHDryContact', name: 'GATE', address: 2, type: 'Contact', visualDryContact: true, invert: true },
     ]);
 });
 
-test('contatos visuais do 3477 dispensam o fakegato-history', () => {
+test('visual 3477 contacts do not require fakegato-history', () => {
     const source = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
     const visualBranch = source.indexOf('if (this.visualDryContact)');
     const fakeGatoBranch = source.indexOf("if (this.config.storage == 'fs')", visualBranch);
@@ -42,45 +42,45 @@ test('contatos visuais do 3477 dispensam o fakegato-history', () => {
     assert.match(source.slice(visualBranch, fakeGatoBranch), /return \[service, this\.dryContactService\]/);
 });
 
-test('converte um comando 4680 CEN+ nos quatro botões programáveis', () => {
+test('converts one 4680 CEN+ control into four programmable buttons', () => {
     const config = normalizeVisualConfig({
-        host: '192.168.0.35',
+        host: '192.168.1.10',
         cenPlusControls: [{
-            name: 'CENÁRIO GARAGEM',
+            name: 'GARAGE SCENARIOS',
             cen: 1,
-            button1: 'CHEGAR',
-            button4: 'SAIR',
+            button1: 'ARRIVE',
+            button4: 'LEAVE',
         }],
     });
 
     assert.deepEqual(config.devices, [{
         accessory: 'MHCenPlusControl',
-        name: 'CENÁRIO GARAGEM',
+        name: 'GARAGE SCENARIOS',
         address: 1,
         buttons: [
-            { button: 1, name: 'CHEGAR' },
-            { button: 2, name: 'CENÁRIO GARAGEM BT2' },
-            { button: 3, name: 'CENÁRIO GARAGEM BT3' },
-            { button: 4, name: 'SAIR' },
+            { button: 1, name: 'ARRIVE' },
+            { button: 2, name: 'GARAGE SCENARIOS BT2' },
+            { button: 3, name: 'GARAGE SCENARIOS BT3' },
+            { button: 4, name: 'LEAVE' },
         ],
     }]);
 });
 
-test('mantém somente acessórios que possuem nome, área e ponto', () => {
+test('keeps only accessories that have a name, area, and point', () => {
     const config = normalizeVisualConfig({
-        host: '192.168.0.23',
+        host: '192.168.1.10',
         lights: [
-            { name: 'PLAFON', area: 1, point: 1, bus: 0 },
+            { name: 'CEILING LIGHT', area: 1, point: 1, bus: 0 },
             { name: '', area: 1, point: 2, bus: 0 },
-            { name: 'Sem ponto', area: 1, bus: 0 },
+            { name: 'Missing point', area: 1, bus: 0 },
         ],
         blinds: [
-            { name: 'TECIDO', area: 1, point: 3, bus: 0, travelTime: 30, invert: true },
+            { name: 'SHADE', area: 1, point: 3, bus: 0, travelTime: 30, invert: true },
         ],
     });
 
     assert.deepEqual(config.devices, [
-        { accessory: 'MHRelay', name: 'PLAFON', address: '0/1/1' },
-        { accessory: 'MHBlind', name: 'TECIDO', address: '0/1/3', time: 30, invert: true },
+        { accessory: 'MHRelay', name: 'CEILING LIGHT', address: '0/1/1' },
+        { accessory: 'MHBlind', name: 'SHADE', address: '0/1/3', time: 30, invert: true },
     ]);
 });
