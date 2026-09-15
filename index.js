@@ -1523,6 +1523,14 @@ class MHDryContact {
 		switch (this.type) {
 			case 'Contact':
 				this.dryContactService = new Service.ContactSensor(this.name);
+				if (this.visualDryContact) {
+					this.dryContactService.getCharacteristic(Characteristic.ContactSensorState)
+						.on('get', (callback) => {
+							this.log.debug(sprintf("getContactSensorState %s = %s", this.address, this.state));
+							callback(null, this.state);
+						});
+					return [service, this.dryContactService];
+				}
 				if (this.config.storage == 'fs')
 					this.LoggingService = new LegrandMyHome.FakeGatoHistoryService("door", this, { storage: 'fs' });
 				else

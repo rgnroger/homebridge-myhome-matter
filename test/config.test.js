@@ -3,6 +3,8 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { normalizeVisualConfig } = require('../lib/config');
+const fs = require('node:fs');
+const path = require('node:path');
 
 test('ignora linhas vazias criadas pela interface de configuração', () => {
     const config = normalizeVisualConfig({
@@ -28,6 +30,16 @@ test('converte contatos secos 3477 em sensores WHO 25 abertos e fechados', () =>
         { accessory: 'MHDryContact', name: 'PORTA', address: 1, type: 'Contact', visualDryContact: true, invert: false },
         { accessory: 'MHDryContact', name: 'PORTÃO', address: 2, type: 'Contact', visualDryContact: true, invert: true },
     ]);
+});
+
+test('contatos visuais do 3477 dispensam o fakegato-history', () => {
+    const source = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
+    const visualBranch = source.indexOf('if (this.visualDryContact)');
+    const fakeGatoBranch = source.indexOf("if (this.config.storage == 'fs')", visualBranch);
+
+    assert.notEqual(visualBranch, -1);
+    assert.ok(fakeGatoBranch > visualBranch);
+    assert.match(source.slice(visualBranch, fakeGatoBranch), /return \[service, this\.dryContactService\]/);
 });
 
 test('mantém somente acessórios que possuem nome, área e ponto', () => {
