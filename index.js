@@ -252,7 +252,7 @@ class LegrandMyHome {
 			if (accessory.accessory == 'MHThermostat') this.devices.push(new MHThermostat(this.log, accessory));
 			if (accessory.accessory == 'MHExternalThermometer') this.devices.push(new MHThermometer(this.log, accessory));
 			if (accessory.accessory == 'MHDryContact') this.devices.push(new MHDryContact(this.log, accessory));
-			if (accessory.accessory == 'MHCenPlusButton') this.devices.push(new MHCenPlusButton(this.log, accessory));
+			if (accessory.accessory == 'MHCenPlusControl') this.devices.push(new MHCenPlusControl(this.log, accessory));
 			if (accessory.accessory == 'MHAux') this.devices.push(new MHAux(this.log, accessory));
 			if (accessory.accessory == 'MHScenario') this.devices.push(new MHScenario(this.log, accessory));
 			if (accessory.accessory == 'MHPowerMeter') this.devices.push(new MHPowerMeter(this.log, accessory));
@@ -439,13 +439,13 @@ class LegrandMyHome {
 
 	onCenPlus(_address, _button, _event) {
 		this.devices.forEach(function (accessory) {
-			if (accessory.cenPlusService !== undefined
-				&& accessory.address == _address
-				&& accessory.button == _button) {
+			if (accessory.cenPlusServices !== undefined && accessory.address == _address) {
+				const service = accessory.cenPlusServices[_button];
+				if (service === undefined) return;
 				const homeKitEvent = homeKitFeedback.cenPlusEventToHomeKit(_event, Characteristic);
 				if (homeKitEvent !== null) {
-					homeKitFeedback.pushValue(
-						accessory.cenPlusService,
+					homeKitFeedback.sendEvent(
+						service,
 						Characteristic.ProgrammableSwitchEvent,
 						homeKitEvent
 					);
@@ -1414,16 +1414,17 @@ class MHPowerMeter {
 	}
 }
 
-class MHCenPlusButton {
+class MHCenPlusControl {
 	constructor(log, config) {
 		this.config = config || {};
 		this.name = config.name;
 		this.address = Number(config.address);
-		this.button = Number(config.button);
+		this.buttons = Array.isArray(config.buttons) ? config.buttons : [];
 		this.displayName = config.name;
-		this.UUID = UUIDGen.generate(sprintf("cenplus-%s-%s", this.address, this.button));
+		this.UUID = UUIDGen.generate(sprintf("cenplus-%s", this.address));
 		this.log = log;
-		this.log.info(sprintf("LegrandMyHome::MHCenPlusButton create object: CEN %s BT%s", this.address, this.button));
+		this.cenPlusServices = {};
+		this.log.info(sprintf("LegrandMyHome::MHCenPlusControl create object: CEN %s com 4 botões", this.address));
 	}
 
 	getServices() {
@@ -1432,17 +1433,31 @@ class MHCenPlusButton {
 			.setCharacteristic(Characteristic.Manufacturer, "BTicino/Legrand")
 			.setCharacteristic(Characteristic.Model, "4680 CEN+")
 			.setCharacteristic(Characteristic.FirmwareRevision, version)
-			.setCharacteristic(Characteristic.SerialNumber, sprintf("CEN %s Button %s", this.address, this.button));
+			.setCharacteristic(Characteristic.SerialNumber, sprintf("CEN %s", this.address));
 
-		this.cenPlusService = new Service.StatelessProgrammableSwitch(this.name);
-		this.cenPlusService.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-			.setProps({
-				validValues: [
-					Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS,
-					Characteristic.ProgrammableSwitchEvent.LONG_PRESS,
-				],
-			});
-		return [service, this.cenPlusService];
+		const services = [service];
+		const serviceLabel = new Service.ServiceLabel(this.name, 'cenplus-label');
+		serviceLabel.setCharacteristic(
+			Characteristic.ServiceLabelNamespace,
+			Characteristic.ServiceLabelNamespace.ARABIC_NUMERALS
+		);
+		services.push(serviceLabel);
+
+		this.buttons.forEach((button) => {
+			const buttonService = new Service.StatelessProgrammableSwitch(button.name, `button-${button.button}`);
+			buttonService.setCharacteristic(Characteristic.ServiceLabelIndex, button.button);
+			buttonService.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+				.setProps({
+					validValues: [
+						Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS,
+						Characteristic.ProgrammableSwitchEvent.LONG_PRESS,
+					],
+				});
+			this.cenPlusServices[button.button] = buttonService;
+			services.push(buttonService);
+		});
+
+		return services;
 	}
 }
 
