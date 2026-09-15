@@ -5,6 +5,7 @@ const test = require('node:test');
 const {
   applyAdvancedBlindFeedback,
   applySimpleBlindFeedback,
+  cenPlusEventToHomeKit,
   contactSensorStateFromDryContact,
   pushValue,
 } = require('../lib/homekit-feedback');
@@ -17,6 +18,11 @@ const Characteristic = {
     STOPPED: 2,
     INCREASING: 1,
     DECREASING: 0,
+  },
+  ProgrammableSwitchEvent: {
+    SINGLE_PRESS: 0,
+    DOUBLE_PRESS: 1,
+    LONG_PRESS: 2,
   },
 };
 
@@ -37,6 +43,13 @@ test('mantém a polaridade física observada do contato WHO 25 no HomeKit', () =
   assert.equal(contactSensorStateFromDryContact(false, false), false);
   assert.equal(contactSensorStateFromDryContact(true, true), false);
   assert.equal(contactSensorStateFromDryContact(false, true), true);
+});
+
+test('envia apenas toque curto e soltura longa do CEN+ ao HomeKit', () => {
+  assert.equal(cenPlusEventToHomeKit('SHORT_PRESS', Characteristic), 0);
+  assert.equal(cenPlusEventToHomeKit('START_EXTENDED_PRESS', Characteristic), null);
+  assert.equal(cenPlusEventToHomeKit('EXTENDED_PRESS', Characteristic), null);
+  assert.equal(cenPlusEventToHomeKit('RELEASE_EXTENDED_PRESS', Characteristic), 2);
 });
 
 test('envia imediatamente o feedback de luz ao HomeKit', () => {
