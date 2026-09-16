@@ -3,6 +3,7 @@ var path = require("path");
 var mh = require(path.join(__dirname, '/lib/mhclient'));
 var normalizeVisualConfig = require(path.join(__dirname, '/lib/config')).normalizeVisualConfig;
 var homeKitFeedback = require(path.join(__dirname, '/lib/homekit-feedback'));
+var MatterBridge = require(path.join(__dirname, '/lib/matter-bridge'));
 var sprintf = require("sprintf-js").sprintf, inherits = require("util").inherits;
 var events = require('events'), util = require('util'), fs = require('fs');
 var Accessory, Characteristic, Service, UUIDGen;
@@ -225,7 +226,7 @@ module.exports = function (homebridge) {
 	inherits(LegrandMyHome.RainSensorService, Service);
 
 	process.setMaxListeners(0);
-	homebridge.registerPlatform("homebridge-myhome-openwebnet", "MyHomeOpenWebNet", LegrandMyHome);
+	homebridge.registerPlatform("homebridge-myhome-matter", "MyHomeMatter", LegrandMyHome);
 
 };
 
@@ -237,6 +238,7 @@ class LegrandMyHome {
 		this.api = api;
 		this.ready = false;
 		this.devices = [];
+		this.cachedMatterAccessories = [];
 		this.lightBuses = [];
 		this.controller = new mh.MyHomeClient(config.ipaddress, config.port, config.ownpassword, config.setclock, this);
 		this.config.devices.forEach(function (accessory) {
@@ -261,12 +263,21 @@ class LegrandMyHome {
 			if (accessory.accessory == 'MHIrrigation') this.devices.push(new MHIrrigation(this.log, accessory));
 
 		}.bind(this));
+		this.matterBridge = new MatterBridge(this.api, this.log, this.config, this.devices, this.controller, this.cachedMatterAccessories);
+		if (this.api) {
+			this.api.on('didFinishLaunching', () => this.matterBridge.start());
+			this.api.on('shutdown', () => this.matterBridge.stop());
+		}
 		this.log.info("LegrandMyHome for MyHome Gateway at " + config.ipaddress + ":" + config.port);
 		this.controller.start();
 	}
 
 	onMonitor(_frame) {
 
+	}
+
+	configureMatterAccessory(accessory) {
+		this.cachedMatterAccessories.push(accessory);
 	}
 
 	onConnect() {
@@ -350,6 +361,7 @@ class LegrandMyHome {
 						homeKitFeedback.pushValue(accessory.OutletService, Characteristic.On, accessory.power);
 					}
 				}.bind(this));
+		this.matterBridge.syncRelays();
 	}
 
 	onContactSensor(_address, _state) {
@@ -777,6 +789,19 @@ class MHRelay {
 		this.pl = parseInt(address[2]);
 	}
 
+	setPower(power) {
+		this.power = Boolean(power);
+		if (this.power && this.bri == 0) this.bri = 100;
+		if (this.power && this.config.frame_on != null) {
+			this.mh.send(this.config.frame_on);
+		} else if (!this.power && this.config.frame_off != null) {
+			this.mh.send(this.config.frame_off);
+		} else {
+			this.mh.relayCommand(this.address, this.power);
+		}
+		if (this.config.parent.matterBridge) this.config.parent.matterBridge.syncRelay(this);
+	}
+
 	getServices() {
 		var service = new Service.AccessoryInformation();
 		service.setCharacteristic(Characteristic.Name, this.name)
@@ -798,19 +823,7 @@ class MHRelay {
 		this.lightBulbService.getCharacteristic(Characteristic.On)
 			.on('set', (level, callback) => {
 				this.log.debug(sprintf("setPower %s = %s", this.address, level));
-				this.power = (level > 0);
-				if (this.power && this.bri == 0) {
-					this.bri = 100;
-				}
-
-				/* Custom frame support */
-				if (this.power && this.config.frame_on != null) {
-					this.mh.send(this.config.frame_on);
-				} else if (!this.power && this.config.frame_off != null) {
-					this.mh.send(this.config.frame_off);
-				} else {
-					this.mh.relayCommand(this.address, this.power);
-				}
+				this.setPower(level > 0);
 				callback(null);
 			})
 			.on('get', (callback) => {

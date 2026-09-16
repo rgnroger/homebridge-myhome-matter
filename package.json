@@ -1,8 +1,8 @@
 {
-  "name": "homebridge-myhome-openwebnet",
-  "displayName": "Bticino/Legrand MyHome OpenWebNet",
-  "version": "1.0.4",
-  "description": "Homebridge plugin for Bticino/Legrand MyHome OpenWebNet systems, with support for lights, dimmers, blinds, 3477 dry contacts and 4680 CEN+ controls.",
+  "name": "homebridge-myhome-matter",
+  "displayName": "Bticino/Legrand MyHome Matter",
+  "version": "2.0.0-beta.1",
+  "description": "Homebridge plugin for Bticino/Legrand MyHome OpenWebNet with HomeKit and native Matter support.",
   "main": "index.js",
   "type": "commonjs",
   "files": [
@@ -13,7 +13,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node --check index.js && node --check lib/config.js && node --check lib/mhclient.js && node --check tools/mock-openwebnet-gateway.js",
+    "build": "node --check index.js && node --check lib/config.js && node --check lib/matter-bridge.js && node --check lib/mhclient.js && node --check tools/mock-openwebnet-gateway.js",
     "test": "node --test",
     "test:watch": "node --test --watch",
     "test:gateway": "node tools/mock-openwebnet-gateway.js",
@@ -24,6 +24,7 @@
     "homebridge",
     "homebridge2",
     "supports-hap",
+    "supports-matter",
     "bticino",
     "bticino myhome",
     "legrand",
@@ -43,15 +44,15 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rgnroger/homebridge-myhome-openwebnet.git"
+    "url": "git+https://github.com/rgnroger/homebridge-myhome-matter.git"
   },
   "bugs": {
-    "url": "https://github.com/rgnroger/homebridge-myhome-openwebnet/issues"
+    "url": "https://github.com/rgnroger/homebridge-myhome-matter/issues"
   },
-  "homepage": "https://github.com/rgnroger/homebridge-myhome-openwebnet#readme",
+  "homepage": "https://github.com/rgnroger/homebridge-myhome-matter#readme",
   "engines": {
     "node": ">=18.0.0",
-    "homebridge": ">=1.6.0"
+    "homebridge": ">=2.4.0"
   },
   "dependencies": {
     "correcting-interval": "^2.0.0",

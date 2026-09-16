@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "MyHomeOpenWebNet",
+  "pluginAlias": "MyHomeMatter",
   "pluginType": "platform",
   "singular": true,
   "strictValidation": false,
@@ -15,7 +15,7 @@
       "name": {
         "title": "Plugin name",
         "type": "string",
-        "default": "MyHome OpenWebNet",
+        "default": "MyHome Matter",
         "required": true
       },
       "host": {

@@ -1,8 +1,8 @@
-# homebridge-myhome-openwebnet
+# homebridge-myhome-matter
 
-A Homebridge plugin for BTicino/Legrand MyHome BUS/SCS installations using the OpenWebNet protocol.
+A Homebridge plugin for BTicino/Legrand MyHome BUS/SCS installations using OpenWebNet, with HomeKit and native Matter support.
 
-> This is a beta release. Lights, 3477 dry contacts, and 4680 CEN+ scenario controls have been validated on a real installation. See [Validation status](#validation-status) before using it in production.
+> This is a development beta. The HomeKit side is based on the physically validated `homebridge-myhome-openwebnet` 1.0.4 core. Matter currently exposes individual on/off lights and outlets only.
 
 ## Features
 
@@ -14,11 +14,13 @@ A Homebridge plugin for BTicino/Legrand MyHome BUS/SCS installations using the O
 - HC/HD/HS/L/N/NT4680 scenario controls configured as CEN+
 - Short-press and long-press events for all four 4680 buttons
 - Visual configuration through the Homebridge UI
+- Native Matter registration for individual lights and outlets
+- HomeKit and Matter can remain enabled together
 
 ## Requirements
 
-- Node.js 18 or later
-- Homebridge 1.6 or later
+- Node.js 22 or 24
+- Homebridge 2.4 or later
 - A MyHome gateway with OpenWebNet enabled
 - The gateway IP address, OpenWebNet port, and password when required
 
@@ -43,10 +45,12 @@ Gateway firmware and authentication settings may affect compatibility. Recent ga
 
 ## Installation
 
-Install the beta release:
+This rebuilt beta is not published yet. During development, install it from a local package produced from this repository.
+
+When a tested beta is published, the installation command will be:
 
 ```bash
-npm install -g homebridge-myhome-openwebnet@beta
+npm install -g homebridge-myhome-matter@beta
 ```
 
 Restart Homebridge after installation.
@@ -55,11 +59,11 @@ The plugin can also be installed from the Homebridge UI when it becomes availabl
 
 ## Visual configuration
 
-Open the Homebridge UI, locate **MyHome OpenWebNet**, and select **Settings**. Enter the gateway settings first:
+Open the Homebridge UI, locate **Bticino/Legrand MyHome Matter**, and select **Settings**. Enter the gateway settings first:
 
 | UI field | What to enter | Example |
 | --- | --- | --- |
-| Plugin name | Name shown by Homebridge | MyHome OpenWebNet |
+| Plugin name | Name shown by Homebridge | MyHome Matter |
 | MyHome gateway IP | Local IP address of the web server | 192.168.1.10 |
 | OpenWebNet port | TCP port configured on the gateway | 20000 |
 | OpenWebNet password | Gateway password, when enabled | YOUR_PASSWORD |
