@@ -1,7 +1,8 @@
 {
   "name": "homebridge-myhome-openwebnet",
-  "version": "1.0.3",
-  "description": "Homebridge plugin for Bticino/Legrand MyHome BUS and SCS using the proven OpenWebNet core from homebridge-myhome-hb2.",
+  "displayName": "Bticino/Legrand MyHome OpenWebNet",
+  "version": "1.0.4",
+  "description": "Homebridge plugin for Bticino/Legrand MyHome OpenWebNet systems, with support for lights, dimmers, blinds, 3477 dry contacts and 4680 CEN+ controls.",
   "main": "index.js",
   "type": "commonjs",
   "files": [
@@ -21,14 +22,21 @@
   "keywords": [
     "homebridge-plugin",
     "homebridge",
+    "homebridge2",
+    "supports-hap",
     "bticino",
+    "bticino myhome",
     "legrand",
+    "legrand myhome",
     "myhome",
+    "my home",
     "my-home",
+    "myhome openwebnet",
     "bus",
     "bus-scs",
     "scs",
     "openwebnet",
+    "open web net",
     "homekit"
   ],
   "author": "rgnroger",
