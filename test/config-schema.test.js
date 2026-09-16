@@ -97,3 +97,10 @@ test('uses compact numeric fields instead of sliders', () => {
   assert.equal(cen.type, 'number');
   assert.equal(schema.schema.properties.cenPlusControls.items.properties.cen.minimum, 1);
 });
+
+test('shows the Matter selector below every light address', () => {
+  const lights = schema.layout.find((entry) => entry && entry.key === 'lights');
+  const selector = lights.items[0].items.find((field) => field.key === 'lights[].matter');
+  assert.equal(selector.type, 'checkbox');
+  assert.equal(selector.title, 'Expose to Matter');
+});

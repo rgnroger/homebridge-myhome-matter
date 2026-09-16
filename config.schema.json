@@ -390,14 +390,14 @@
                   "flex": "1 1 120px",
                   "title": "BUS (B)",
                   "description": ""
-                },
-                {
-                  "key": "lights[].matter",
-                  "type": "checkbox",
-                  "flex": "1 1 160px",
-                  "title": "Expose to Matter"
                 }
               ]
+            },
+            {
+              "key": "lights[].matter",
+              "type": "checkbox",
+              "title": "Expose to Matter",
+              "description": "Publish this light through the Matter bridge."
             }
           ]
         }
