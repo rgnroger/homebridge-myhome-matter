@@ -65,7 +65,7 @@ test('keeps only accessories that have a name, area, and point', () => {
     const config = normalizeVisualConfig({
         host: '192.168.1.10',
         lights: [
-            { name: 'CEILING LIGHT', area: 1, point: 1, bus: 0 },
+            { name: 'CEILING LIGHT', area: 1, point: 1, bus: 0, matter: true },
             { name: '', area: 1, point: 2, bus: 0 },
             { name: 'Missing point', area: 1, bus: 0 },
         ],
@@ -75,7 +75,7 @@ test('keeps only accessories that have a name, area, and point', () => {
     });
 
     assert.deepEqual(config.devices, [
-        { accessory: 'MHRelay', name: 'CEILING LIGHT', address: '0/1/1' },
+        { accessory: 'MHRelay', name: 'CEILING LIGHT', address: '0/1/1', matter: true },
         { accessory: 'MHBlind', name: 'SHADE', address: '0/1/3', time: 30, invert: true },
     ]);
 });

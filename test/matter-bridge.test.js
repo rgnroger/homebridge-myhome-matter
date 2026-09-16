@@ -12,7 +12,7 @@ test('registers individual relays and keeps Matter state synchronized', async ()
         name: 'Kitchen',
         address: '0/1/1',
         power: false,
-        config: { accessory: 'MHRelay' },
+        config: { accessory: 'MHRelay', matter: true },
         setPower(value) {
             this.power = value;
             commands.push(value);
