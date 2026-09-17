@@ -393,12 +393,7 @@
                 }
               ]
             },
-            {
-              "key": "lights[].matter",
-              "type": "checkbox",
-              "title": "Expose to Matter",
-              "description": "Publish this light through the Matter bridge."
-            }
+            "lights[].matter"
           ]
         }
       ]

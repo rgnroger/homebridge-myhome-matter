@@ -100,7 +100,8 @@ test('uses compact numeric fields instead of sliders', () => {
 
 test('shows the Matter selector below every light address', () => {
   const lights = schema.layout.find((entry) => entry && entry.key === 'lights');
-  const selector = lights.items[0].items.find((field) => field.key === 'lights[].matter');
-  assert.equal(selector.type, 'checkbox');
-  assert.equal(selector.title, 'Expose to Matter');
+  const selector = lights.items[0].items.find((field) => field === 'lights[].matter');
+  assert.equal(selector, 'lights[].matter');
+  assert.equal(schema.schema.properties.lights.items.properties.matter.type, 'boolean');
+  assert.equal(schema.schema.properties.lights.items.properties.matter.title, 'Expose to Matter');
 });

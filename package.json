@@ -1,7 +1,7 @@
 {
   "name": "homebridge-myhome-matter",
   "displayName": "Bticino/Legrand MyHome Matter",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Homebridge plugin for Bticino/Legrand MyHome OpenWebNet with HomeKit and native Matter support.",
   "main": "index.js",
   "type": "commonjs",
