@@ -65,7 +65,7 @@ test('keeps only accessories that have a name, area, and point', () => {
     const config = normalizeVisualConfig({
         host: '192.168.1.10',
         lights: [
-            { name: 'CEILING LIGHT', area: 1, point: 1, bus: 0, matter: true },
+            { name: 'CEILING LIGHT', area: 1, point: 1, bus: 0, matter: 'enabled' },
             { name: '', area: 1, point: 2, bus: 0 },
             { name: 'Missing point', area: 1, bus: 0 },
         ],

@@ -98,10 +98,15 @@ test('uses compact numeric fields instead of sliders', () => {
   assert.equal(schema.schema.properties.cenPlusControls.items.properties.cen.minimum, 1);
 });
 
-test('shows the Matter selector below every light address', () => {
+test('shows a Matter selector beside every light address', () => {
   const lights = schema.layout.find((entry) => entry && entry.key === 'lights');
-  const selector = lights.items[0].items.find((field) => field === 'lights[].matter');
-  assert.equal(selector, 'lights[].matter');
-  assert.equal(schema.schema.properties.lights.items.properties.matter.type, 'boolean');
-  assert.equal(schema.schema.properties.lights.items.properties.matter.title, 'Expose to Matter');
+  const addressFields = lights.items[0].items[1].items;
+  const selector = addressFields.find((field) => field.key === 'lights[].matter');
+  assert.equal(selector.type, 'select');
+  assert.equal(selector.title, 'Matter');
+  assert.equal(schema.schema.properties.lights.items.properties.matter.type, 'string');
+  assert.deepEqual(
+    schema.schema.properties.lights.items.properties.matter.oneOf.map((option) => option.enum[0]),
+    ['disabled', 'enabled'],
+  );
 });

@@ -84,10 +84,20 @@
               "required": true
             },
             "matter": {
-              "title": "Expose to Matter",
+              "title": "Matter",
               "description": "Publish this light through the Matter bridge.",
-              "type": "boolean",
-              "default": false,
+              "type": "string",
+              "default": "disabled",
+              "oneOf": [
+                {
+                  "title": "Disabled",
+                  "enum": ["disabled"]
+                },
+                {
+                  "title": "Enabled",
+                  "enum": ["enabled"]
+                }
+              ],
               "required": false
             }
           }
@@ -375,25 +385,30 @@
                 {
                   "key": "lights[].area",
                   "type": "number",
-                  "flex": "1 1 120px",
+                  "flex": "1 1 80px",
                   "title": "Area (A)"
                 },
                 {
                   "key": "lights[].point",
                   "type": "number",
-                  "flex": "1 1 120px",
+                  "flex": "1 1 80px",
                   "title": "Point (PL)"
                 },
                 {
                   "key": "lights[].bus",
                   "type": "number",
-                  "flex": "1 1 120px",
+                  "flex": "1 1 80px",
                   "title": "BUS (B)",
                   "description": ""
+                },
+                {
+                  "key": "lights[].matter",
+                  "type": "select",
+                  "flex": "1 1 150px",
+                  "title": "Matter"
                 }
               ]
-            },
-            "lights[].matter"
+            }
           ]
         }
       ]
